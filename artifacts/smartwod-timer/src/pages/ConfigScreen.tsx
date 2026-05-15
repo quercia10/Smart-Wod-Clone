@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { WorkoutMode, WorkoutConfig } from "@/lib/types";
 import { resumeAudio } from "@/lib/sound";
 
@@ -56,9 +56,22 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
   });
 
   const [focusedField, setFocusedField] = useState(0);
-  // focusedField goes from 0..fields.length (last = start button)
+  // focusedField: 0..fields.length-1 = config rows, fields.length = START button
 
   const totalItems = fields.length + 1; // +1 for START button
+
+  // Refs: indices 0..fields.length-1 are field rows, fields.length is START button
+  const itemRefs = useRef<(HTMLElement | null)[]>([]);
+
+  const moveFocus = useCallback((index: number) => {
+    setFocusedField(index);
+    itemRefs.current[index]?.focus();
+  }, []);
+
+  // Auto-focus first item on mount
+  useEffect(() => {
+    itemRefs.current[0]?.focus();
+  }, []);
 
   const changeValue = useCallback((fieldIndex: number, delta: number) => {
     const field = fields[fieldIndex];
@@ -88,10 +101,10 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        setFocusedField((p) => (p - 1 + totalItems) % totalItems);
+        moveFocus((focusedField - 1 + totalItems) % totalItems);
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
-        setFocusedField((p) => (p + 1) % totalItems);
+        moveFocus((focusedField + 1) % totalItems);
       } else if (e.key === "ArrowLeft") {
         e.preventDefault();
         if (focusedField < fields.length) changeValue(focusedField, -1);
@@ -108,7 +121,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [focusedField, fields.length, totalItems, changeValue, buildConfig, onStart, onBack]);
+  }, [focusedField, fields.length, totalItems, changeValue, buildConfig, onStart, onBack, moveFocus]);
 
   return (
     <div
@@ -157,8 +170,11 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
           return (
             <div
               key={field.key}
+              ref={(el) => { itemRefs.current[i] = el; }}
               data-testid={`config-field-${field.key}`}
-              onClick={() => setFocusedField(i)}
+              tabIndex={0}
+              onClick={() => moveFocus(i)}
+              onFocus={() => setFocusedField(i)}
               style={{
                 background: isFocused ? `rgba(${hexToRgb(color)}, 0.1)` : "rgba(255,255,255,0.03)",
                 border: `2px solid ${isFocused ? color : "rgba(255,255,255,0.1)"}`,
@@ -169,6 +185,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
                 justifyContent: "space-between",
                 transition: "all 0.2s ease",
                 boxShadow: isFocused ? `0 0 20px ${color}44` : "none",
+                outline: "none",
               }}
             >
               <div
@@ -234,7 +251,9 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
 
         {/* START button */}
         <button
+          ref={(el) => { itemRefs.current[fields.length] = el; }}
           data-testid="btn-start"
+          tabIndex={0}
           className="wod-btn"
           onClick={() => { resumeAudio(); onStart(buildConfig()); }}
           onFocus={() => setFocusedField(fields.length)}
@@ -255,7 +274,6 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
               ? `0 0 30px ${color}, 0 0 60px ${color}66`
               : `0 0 10px ${color}44`,
             transform: focusedField === fields.length ? "scale(1.03)" : "scale(1)",
-            outline: "none",
           }}
         >
           INIZIA
