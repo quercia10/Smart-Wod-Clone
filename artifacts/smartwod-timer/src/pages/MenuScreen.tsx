@@ -46,7 +46,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
       style={{
         width: "100vw",
         height: "100vh",
-        background: "#000",
+        background: "transparent",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

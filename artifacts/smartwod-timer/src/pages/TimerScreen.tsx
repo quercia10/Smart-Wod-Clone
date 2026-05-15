@@ -249,7 +249,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   );
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#000", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease" }}>
       {/* Phase tint */}
       <div style={{ position: "absolute", inset: 0, background: bg, transition: "background 0.5s ease", pointerEvents: "none", zIndex: 1 }} />
 

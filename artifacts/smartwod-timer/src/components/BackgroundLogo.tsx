@@ -1,3 +1,5 @@
+const logoUrl = `${import.meta.env.BASE_URL}logo.png`.replace(/\/+/g, "/");
+
 export default function BackgroundLogo() {
   return (
     <div
@@ -13,13 +15,14 @@ export default function BackgroundLogo() {
       }}
     >
       <img
-        src="/logo.png"
+        src={logoUrl}
         alt=""
         style={{
-          width: "clamp(200px, 35vw, 520px)",
+          width: "clamp(220px, 38vw, 560px)",
           height: "auto",
-          opacity: 0.08,
-          filter: "grayscale(100%)",
+          opacity: 0.12,
+          filter: "brightness(3) saturate(0)",
+          mixBlendMode: "screen",
         }}
       />
     </div>

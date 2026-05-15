@@ -90,7 +90,7 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
       style={{
         width: "100vw",
         height: "100vh",
-        background: "#000",
+        background: "transparent",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
