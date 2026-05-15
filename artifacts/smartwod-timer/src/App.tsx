@@ -4,6 +4,7 @@ import ConfigScreen from "@/pages/ConfigScreen";
 import TimerScreen from "@/pages/TimerScreen";
 import AccessGate from "@/pages/AccessGate";
 import TrialBanner from "@/pages/TrialBanner";
+import BackgroundLogo from "@/components/BackgroundLogo";
 import { checkLicense, markTrialUsed } from "@/lib/license";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 
@@ -58,27 +59,30 @@ export default function App() {
   }
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#000", overflow: "hidden" }}>
-      {screen === "gate" && (
-        <AccessGate mode="normal" onUnlock={handleUnlock} />
-      )}
-      {screen === "gate-expired" && (
-        <AccessGate mode="expired" onUnlock={handleUnlock} />
-      )}
-      {screen === "trial-banner" && (
-        <TrialBanner onDone={handleTrialBannerDone} />
-      )}
-      {screen === "menu" && <MenuScreen onSelect={handleModeSelect} />}
-      {screen === "config" && selectedMode && (
-        <ConfigScreen
-          mode={selectedMode}
-          onStart={handleConfigStart}
-          onBack={handleBack}
-        />
-      )}
-      {screen === "timer" && activeConfig && (
-        <TimerScreen config={activeConfig} onBack={handleBack} />
-      )}
+    <div style={{ width: "100vw", height: "100vh", background: "#000", overflow: "hidden", position: "relative" }}>
+      <BackgroundLogo />
+      <div style={{ position: "relative", zIndex: 2, width: "100%", height: "100%" }}>
+        {screen === "gate" && (
+          <AccessGate mode="normal" onUnlock={handleUnlock} />
+        )}
+        {screen === "gate-expired" && (
+          <AccessGate mode="expired" onUnlock={handleUnlock} />
+        )}
+        {screen === "trial-banner" && (
+          <TrialBanner onDone={handleTrialBannerDone} />
+        )}
+        {screen === "menu" && <MenuScreen onSelect={handleModeSelect} />}
+        {screen === "config" && selectedMode && (
+          <ConfigScreen
+            mode={selectedMode}
+            onStart={handleConfigStart}
+            onBack={handleBack}
+          />
+        )}
+        {screen === "timer" && activeConfig && (
+          <TimerScreen config={activeConfig} onBack={handleBack} />
+        )}
+      </div>
     </div>
   );
 }

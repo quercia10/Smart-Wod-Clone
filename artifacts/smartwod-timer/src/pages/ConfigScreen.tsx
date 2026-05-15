@@ -30,9 +30,11 @@ const FIELDS: Record<WorkoutMode, FieldDef[]> = {
     { key: "rounds", label: "Numero Round", unit: "round", min: 1, max: 60, step: 1, default: 10 },
   ],
   TABATA: [
-    { key: "rounds", label: "Numero Round", unit: "round", min: 1, max: 16, step: 1, default: 8 },
+    { key: "rounds", label: "Numero Round", unit: "round", min: 1, max: 12, step: 1, default: 4 },
+    { key: "setsPerRound", label: "Serie per Round", unit: "serie", min: 1, max: 8, step: 1, default: 2 },
     { key: "workTime", label: "Tempo Lavoro", unit: "sec", min: 5, max: 60, step: 5, default: 20 },
-    { key: "restTime", label: "Tempo Riposo", unit: "sec", min: 5, max: 60, step: 5, default: 10 },
+    { key: "restTime", label: "Recupero Serie", unit: "sec", min: 5, max: 60, step: 5, default: 10 },
+    { key: "roundPauseTime", label: "Pausa Round", unit: "sec", min: 10, max: 120, step: 10, default: 60 },
   ],
 };
 
@@ -71,8 +73,10 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
     const cfg: WorkoutConfig = { mode };
     if (values.duration != null) cfg.duration = values.duration * 60;
     if (values.rounds != null) cfg.rounds = values.rounds;
+    if (values.setsPerRound != null) cfg.setsPerRound = values.setsPerRound;
     if (values.workTime != null) cfg.workTime = values.workTime;
     if (values.restTime != null) cfg.restTime = values.restTime;
+    if (values.roundPauseTime != null) cfg.roundPauseTime = values.roundPauseTime;
     return cfg;
   }, [mode, values]);
 

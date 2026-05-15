@@ -6,27 +6,17 @@ export type AppState =
   | "countdown"
   | "running"
   | "rest"
+  | "round-pause"
   | "done";
 
 export interface WorkoutConfig {
   mode: WorkoutMode;
-  duration?: number; // seconds for AMRAP / FOR_TIME / EMOM interval
-  rounds?: number; // for EMOM / TABATA
-  workTime?: number; // TABATA work seconds
-  restTime?: number; // TABATA rest seconds
-}
-
-export interface TimerState {
-  appState: AppState;
-  config: WorkoutConfig | null;
-  timeLeft: number;
-  totalTime: number;
-  currentRound: number;
-  totalRounds: number;
-  elapsedTime: number;
-  roundCount: number; // AMRAP lap counter
-  isWorkPhase: boolean; // TABATA
-  countdownNum: number;
+  duration?: number;       // seconds for AMRAP / FOR_TIME / EMOM interval
+  rounds?: number;         // for EMOM / TABATA (complete rounds)
+  setsPerRound?: number;   // TABATA: work/rest sets per round
+  workTime?: number;       // TABATA work seconds
+  restTime?: number;       // TABATA short rest seconds
+  roundPauseTime?: number; // TABATA long pause between rounds
 }
 
 export const MODE_LABELS: Record<WorkoutMode, string> = {
@@ -40,7 +30,7 @@ export const MODE_SUBTITLES: Record<WorkoutMode, string> = {
   AMRAP: "Quanti più giri possibili",
   FOR_TIME: "A tempo",
   EMOM: "Ogni minuto nel minuto",
-  TABATA: "8 round 20s lavoro / 10s riposo",
+  TABATA: "Lavoro / Recupero / Pausa Round",
 };
 
 export const MODE_COLORS: Record<WorkoutMode, string> = {
