@@ -34,20 +34,20 @@ interface TimerState {
 }
 
 /* ── colors ── */
-const WORK_COLOR  = "#00ff66";
-const REST_COLOR  = "#ff8800";
-const PAUSE_COLOR = "#4488cc";
-const DONE_COLOR  = "#00ff66";
+const WORK_COLOR  = "#2ECC71";
+const REST_COLOR  = "#E67E22";
+const PAUSE_COLOR = "#3498DB";
+const DONE_COLOR  = "#2ECC71";
 
 const MODE_COLOR: Record<WorkoutMode, string> = {
-  AMRAP:    WORK_COLOR,
-  FOR_TIME: REST_COLOR,
-  EMOM:     WORK_COLOR,
-  TABATA:   "#ff3333",
+  AMRAP:    "#2ECC71",
+  FOR_TIME: "#E67E22",
+  EMOM:     "#3498DB",
+  TABATA:   "#E74C3C",
 };
 
 function phaseColor(phase: Phase, mode: WorkoutMode): string {
-  if (phase === "countdown")   return "#ff8800";
+  if (phase === "countdown")   return "#E67E22";
   if (phase === "running")     return mode === "TABATA" ? WORK_COLOR : MODE_COLOR[mode];
   if (phase === "rest")        return REST_COLOR;
   if (phase === "round-pause") return PAUSE_COLOR;
@@ -55,9 +55,9 @@ function phaseColor(phase: Phase, mode: WorkoutMode): string {
 }
 
 function phaseBg(phase: Phase): string {
-  if (phase === "running")     return "rgba(0,255,102,0.025)";
-  if (phase === "rest")        return "rgba(255,136,0,0.035)";
-  if (phase === "round-pause") return "rgba(68,136,204,0.045)";
+  if (phase === "running")     return "rgba(46,204,113,0.025)";
+  if (phase === "rest")        return "rgba(230,126,34,0.03)";
+  if (phase === "round-pause") return "rgba(52,152,219,0.035)";
   return "transparent";
 }
 
@@ -162,8 +162,8 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   const bg       = phaseBg(state.phase);
   const progress = state.totalTime > 0 ? state.timeLeft / state.totalTime : 0;
 
-  /* ── avviso countdown: giallo neon negli ultimi 5s (lavoro/rest) o 10s (round-pause) ── */
-  const WARNING_COLOR = "#ffe600";
+  /* ── avviso countdown: giallo caldo negli ultimi 5s (lavoro/rest) o 10s (round-pause) ── */
+  const WARNING_COLOR = "#F1C40F";
   const isWarning = (
     (state.phase === "running" || state.phase === "rest") &&
     state.timeLeft > 0 && state.timeLeft <= 5
@@ -311,22 +311,22 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2vh 4vw", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative", zIndex: 2 }}>
-        <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(20px,2.5vw,36px)", fontWeight: 700, color, textShadow: `0 0 15px ${color}`, letterSpacing: "0.2em" }}>
+        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(16px,2.2vw,30px)", fontWeight: 700, color, letterSpacing: "0.06em" }}>
           {mode.replace("_", " ")}
           {mode === "TABATA" && state.phase !== "countdown" && state.phase !== "done" && (
-            <span style={{ fontSize: "60%", fontWeight: 300, marginLeft: "16px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.1em" }}>
+            <span style={{ fontSize: "65%", fontWeight: 400, marginLeft: "12px", color: "rgba(248,249,250,0.4)", letterSpacing: "0.04em" }}>
               {state.phase === "running" ? "LAVORO" : state.phase === "rest" ? "RECUPERO" : "PAUSA SERIE"}
             </span>
           )}
         </div>
 
         {(mode === "EMOM" || mode === "TABATA") && state.phase !== "countdown" && state.phase !== "done" && (
-          <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(15px,1.9vw,26px)", color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em" }}>
-            SERIE <span style={{ color: "white", fontWeight: 700 }}>{state.currentRound}</span> / {state.totalRounds}
+          <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(13px,1.6vw,22px)", color: "rgba(248,249,250,0.42)", letterSpacing: "0.04em" }}>
+            SERIE <span style={{ color: "#F8F9FA", fontWeight: 700 }}>{state.currentRound}</span> / {state.totalRounds}
           </div>
         )}
 
-        {/* Pause / Resume button — always visible during active phases */}
+        {/* Pause / Resume button */}
         {state.phase !== "countdown" && state.phase !== "done" && (
           <button
             ref={pauseBtnRef}
@@ -334,18 +334,18 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
             className="wod-btn"
             onClick={togglePause}
             style={{
-              background: state.paused ? "rgba(255,136,0,0.18)" : "rgba(255,255,255,0.05)",
-              border: `2px solid ${state.paused ? "#ff8800" : "rgba(255,255,255,0.18)"}`,
-              borderRadius: "8px",
-              padding: "clamp(6px,1vh,12px) clamp(14px,2vw,28px)",
-              fontFamily: "Oswald, sans-serif",
-              fontSize: "clamp(13px,1.5vw,20px)",
-              color: state.paused ? "#ff8800" : "rgba(255,255,255,0.7)",
+              background: state.paused ? "#E67E22" : "rgba(255,255,255,0.07)",
+              border: `1px solid ${state.paused ? "#E67E22" : "rgba(255,255,255,0.14)"}`,
+              borderRadius: "20px",
+              padding: "clamp(6px,1vh,10px) clamp(14px,2vw,26px)",
+              fontFamily: "Inter, sans-serif",
+              fontSize: "clamp(12px,1.3vw,18px)",
+              fontWeight: state.paused ? 700 : 500,
+              color: state.paused ? "#121212" : "rgba(248,249,250,0.75)",
               cursor: "pointer",
-              letterSpacing: "0.15em",
-              boxShadow: state.paused ? "0 0 14px rgba(255,136,0,0.5)" : "none",
-              transition: "all 0.2s ease",
-              animation: state.paused ? "pulse-neon 1s ease-in-out infinite" : "none",
+              letterSpacing: "0.05em",
+              transition: "all 0.18s ease",
+              animation: state.paused ? "pulse-subtle 1.4s ease-in-out infinite" : "none",
             }}
           >
             {state.paused ? "▶ RIPRENDI" : "⏸ PAUSA"}
@@ -372,16 +372,18 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 
         {(state.phase === "running" || state.phase === "rest") && (
           <>
-            <img src="/logo.png" alt="SmartWOD" className="timer-logo" />
-            <ProgressCircle progress={progress} size={circleSize} strokeWidth={13} color={displayColor}>
+            <div className="timer-logo-wrap">
+              <img src="/logo.png" alt="SmartWOD" />
+            </div>
+            <ProgressCircle progress={progress} size={circleSize} strokeWidth={10} color={displayColor}>
               <div
                 className={isWarning ? "timer-warning" : ""}
-                style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,15vmin,130px)", fontWeight: 700, color: displayColor, textShadow: `0 0 20px ${displayColor},0 0 40px ${displayColor}66`, letterSpacing: "0.02em", lineHeight: 1 }}
+                style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,15vmin,130px)", fontWeight: 700, color: displayColor, letterSpacing: "0.02em", lineHeight: 1 }}
                 data-testid="timer-display"
               >
                 {mode === "FOR_TIME" ? formatTime(state.elapsedForTime) : formatTime(state.timeLeft)}
               </div>
-              <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(11px,1.2vw,16px)", color: isWarning ? "rgba(255,230,0,0.55)" : "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "8px" }}>
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(10px,1.1vw,15px)", fontWeight: 500, color: isWarning ? "rgba(241,196,15,0.65)" : "rgba(248,249,250,0.35)", letterSpacing: "0.14em", marginTop: "8px", textTransform: "uppercase" }}>
                 {mode === "FOR_TIME" ? "TRASCORSI" : state.phase === "rest" ? "RECUPERO" : "RIMANENTI"}
               </div>
             </ProgressCircle>
@@ -394,6 +396,11 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
           </>
         )}
       </div>
+
+      {/* Flat progress bar */}
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: "3px", background: "rgba(255,255,255,0.07)", zIndex: 10, pointerEvents: "none" }}>
+        <div style={{ height: "100%", width: `${progress * 100}%`, background: displayColor, transition: "width 0.95s linear" }} />
+      </div>
     </div>
   );
 }
@@ -403,12 +410,12 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 function CountdownDisplay({ countdownNum }: { countdownNum: number }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2vh" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(22px,3vw,48px)", color: "rgba(255,255,255,0.5)", letterSpacing: "0.4em" }}>PREPARATI</div>
-      <div key={countdownNum} style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(90px,28vmin,360px)", fontWeight: 700, color: "#ff8800", textShadow: "0 0 40px #ff8800,0 0 80px #ff880066", lineHeight: 1, animation: "countdown-num 1s ease-in-out" }}>
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(16px,2.2vw,34px)", fontWeight: 600, color: "rgba(248,249,250,0.42)", letterSpacing: "0.3em", textTransform: "uppercase" }}>Preparati</div>
+      <div key={countdownNum} style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(90px,28vmin,360px)", fontWeight: 700, color: "#E67E22", lineHeight: 1, animation: "countdown-num 1s ease-in-out" }}>
         {countdownNum}
       </div>
-      <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(13px,1.5vw,20px)", color: "rgba(255,255,255,0.25)", letterSpacing: "0.25em" }}>
-        {countdownNum <= 3 ? "VIA TRA POCO..." : "secondi all'inizio"}
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(12px,1.3vw,18px)", fontWeight: 400, color: "rgba(248,249,250,0.25)", letterSpacing: "0.2em" }}>
+        {countdownNum <= 3 ? "Via tra poco..." : "secondi all'inizio"}
       </div>
     </div>
   );
@@ -417,30 +424,30 @@ function CountdownDisplay({ countdownNum }: { countdownNum: number }) {
 function RoundPauseDisplay({ timeLeft, totalTime, currentRound, totalRounds, phrase, circleSize, isWarning }: {
   timeLeft: number; totalTime: number; currentRound: number; totalRounds: number; phrase: string; circleSize: number; isWarning?: boolean;
 }) {
-  const WARNING_COLOR = "#ffe600";
+  const WARNING_COLOR = "#F1C40F";
   const displayColor = isWarning ? WARNING_COLOR : PAUSE_COLOR;
   const progress = totalTime > 0 ? timeLeft / totalTime : 0;
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3vh", maxWidth: "92vw" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(16px,2.2vw,32px)", fontWeight: 500, color: displayColor, textShadow: `0 0 15px ${displayColor}`, letterSpacing: "0.2em" }}>
-        PAUSA SERIE — SERIE {currentRound} / {totalRounds}
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(13px,1.8vw,26px)", fontWeight: 600, color: displayColor, letterSpacing: "0.06em" }}>
+        Pausa Serie &nbsp;·&nbsp; {currentRound} / {totalRounds}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "clamp(28px,5vw,70px)", flexWrap: "wrap", justifyContent: "center" }}>
-        <ProgressCircle progress={progress} size={circleSize} strokeWidth={11} color={displayColor}>
+        <ProgressCircle progress={progress} size={circleSize} strokeWidth={10} color={displayColor}>
           <div
             className={isWarning ? "timer-warning" : ""}
-            style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,12vmin,100px)", fontWeight: 700, color: displayColor, textShadow: `0 0 20px ${displayColor}`, lineHeight: 1 }}
+            style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,12vmin,100px)", fontWeight: 700, color: displayColor, lineHeight: 1 }}
           >
             {formatTime(timeLeft)}
           </div>
-          <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,14px)", color: isWarning ? "rgba(255,230,0,0.55)" : "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "6px" }}>RIPARTENZA</div>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(9px,1vw,13px)", fontWeight: 500, color: isWarning ? "rgba(241,196,15,0.55)" : "rgba(248,249,250,0.32)", letterSpacing: "0.12em", marginTop: "6px", textTransform: "uppercase" }}>Ripartenza</div>
         </ProgressCircle>
 
-        <div style={{ maxWidth: "min(540px, 82vw)", background: "rgba(68,136,204,0.07)", border: "1px solid rgba(68,136,204,0.3)", borderRadius: "12px", padding: "clamp(18px,3vh,32px) clamp(18px,3vw,36px)", display: "flex", flexDirection: "column", gap: "14px" }}>
-          <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.25)", letterSpacing: "0.3em", textTransform: "uppercase" }}>
-            💬 frase del round
+        <div style={{ maxWidth: "min(540px, 82vw)", background: "rgba(52,152,219,0.06)", border: "1px solid rgba(52,152,219,0.18)", borderRadius: "16px", padding: "clamp(18px,3vh,32px) clamp(18px,3vw,36px)", display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,12px)", fontWeight: 500, color: "rgba(248,249,250,0.25)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+            Frase del round
           </div>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(17px,2.1vw,30px)", fontWeight: 500, color: "rgba(255,255,255,0.88)", lineHeight: 1.4, animation: "scale-in 0.4s ease-out" }}>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(15px,1.9vw,28px)", fontWeight: 500, color: "rgba(248,249,250,0.85)", lineHeight: 1.45, animation: "scale-in 0.4s ease-out" }}>
             "{phrase}"
           </div>
         </div>
@@ -454,31 +461,31 @@ function DoneDisplay({ mode, elapsed, roundCount, phrase }: {
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2.5vh", maxWidth: "88vw", textAlign: "center" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(42px,14vmin,110px)", fontWeight: 700, color: DONE_COLOR, textShadow: `0 0 30px ${DONE_COLOR},0 0 60px ${DONE_COLOR}66`, letterSpacing: "0.3em", animation: "scale-in 0.4s ease-out" }}>
+      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(42px,14vmin,110px)", fontWeight: 700, color: DONE_COLOR, letterSpacing: "0.2em", animation: "scale-in 0.4s ease-out" }}>
         TEMPO!
       </div>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(16px,2.2vw,32px)", fontWeight: 300, color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em" }}>
-        ALLENAMENTO COMPLETATO
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(13px,1.8vw,26px)", fontWeight: 400, color: "rgba(248,249,250,0.32)", letterSpacing: "0.1em" }}>
+        Allenamento completato
       </div>
 
       {mode === "FOR_TIME" && (
         <div>
-          <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,15px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em", marginBottom: "8px" }}>TEMPO TOTALE</div>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(56px,9vw,120px)", fontWeight: 700, color: DONE_COLOR, textShadow: `0 0 20px ${DONE_COLOR}`, lineHeight: 1 }}>{formatTime(elapsed)}</div>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginBottom: "8px", textTransform: "uppercase" }}>Tempo totale</div>
+          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(56px,9vw,120px)", fontWeight: 700, color: DONE_COLOR, lineHeight: 1 }}>{formatTime(elapsed)}</div>
         </div>
       )}
       {mode === "AMRAP" && (
         <div>
-          <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,15px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em", marginBottom: "8px" }}>GIRI TOTALI</div>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,13vw,170px)", fontWeight: 700, color: DONE_COLOR, textShadow: `0 0 20px ${DONE_COLOR}`, lineHeight: 1 }}>{roundCount}</div>
+          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginBottom: "8px", textTransform: "uppercase" }}>Giri totali</div>
+          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,13vw,170px)", fontWeight: 700, color: DONE_COLOR, lineHeight: 1 }}>{roundCount}</div>
         </div>
       )}
 
-      <div style={{ maxWidth: "clamp(260px,52vw,700px)", background: "rgba(0,255,102,0.05)", border: "1px solid rgba(0,255,102,0.2)", borderRadius: "12px", padding: "clamp(14px,2vh,26px) clamp(18px,3vw,36px)", fontFamily: "Oswald,sans-serif", fontSize: "clamp(15px,1.9vw,27px)", fontWeight: 500, color: "rgba(255,255,255,0.8)", lineHeight: 1.4, animation: "scale-in 0.5s ease-out 0.3s both" }}>
+      <div style={{ maxWidth: "clamp(260px,52vw,700px)", background: "rgba(46,204,113,0.05)", border: "1px solid rgba(46,204,113,0.18)", borderRadius: "16px", padding: "clamp(14px,2vh,26px) clamp(18px,3vw,36px)", fontFamily: "Inter,sans-serif", fontSize: "clamp(14px,1.7vw,24px)", fontWeight: 500, color: "rgba(248,249,250,0.78)", lineHeight: 1.45, animation: "scale-in 0.5s ease-out 0.3s both" }}>
         "{phrase}"
       </div>
 
-      <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(11px,1.1vw,15px)", color: "rgba(255,255,255,0.2)", letterSpacing: "0.2em" }}>
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.15em" }}>
         INVIO / ESC = Menu
       </div>
     </div>
@@ -501,8 +508,8 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
   if (mode === "AMRAP") {
     return (
       <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,15px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em" }}>GIRI COMPLETATI</div>
-        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,12vw,160px)", fontWeight: 700, color: WORK_COLOR, textShadow: `0 0 30px ${WORK_COLOR}`, lineHeight: 1 }} data-testid="round-count">
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Giri completati</div>
+        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,12vw,160px)", fontWeight: 700, color: WORK_COLOR, lineHeight: 1 }} data-testid="round-count">
           {state.roundCount}
         </div>
         <button
@@ -511,11 +518,11 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
           tabIndex={0}
           className="wod-btn"
           onClick={onAddRound}
-          style={{ background: "transparent", border: `3px solid ${WORK_COLOR}`, borderRadius: "10px", padding: "12px 32px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: WORK_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${WORK_COLOR}44`, transition: "all 0.2s ease" }}>
-          + GIRO
+          style={{ background: "#1E1E1E", border: `1px solid rgba(46,204,113,0.4)`, borderRadius: "20px", padding: "clamp(10px,1.4vh,18px) clamp(22px,2.8vw,44px)", fontFamily: "Inter,sans-serif", fontSize: "clamp(13px,1.6vw,22px)", fontWeight: 700, color: WORK_COLOR, cursor: "pointer", letterSpacing: "0.1em", transition: "all 0.18s ease" }}>
+          + Giro
         </button>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.15em", marginTop: "8px" }}>
-          <span className="dpad-hint">INVIO / ↑ = +Giro &nbsp;|&nbsp; ⏸ PAUSA in alto • ESC = Menu</span>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em", marginTop: "4px" }}>
+          <span className="dpad-hint">INVIO / ↑ = +Giro &nbsp;·&nbsp; ESC = Menu</span>
         </div>
       </div>
     );
@@ -524,8 +531,8 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
   if (mode === "FOR_TIME") {
     return (
       <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,15px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em" }}>CAP RIMANENTE</div>
-        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,5vw,70px)", fontWeight: 700, color: "rgba(255,255,255,0.55)", lineHeight: 1 }}>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Cap rimanente</div>
+        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,5vw,70px)", fontWeight: 700, color: "rgba(248,249,250,0.5)", lineHeight: 1 }}>
           {formatTime(state.timeLeft)}
         </div>
         <button
@@ -534,11 +541,11 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
           tabIndex={0}
           className="wod-btn"
           onClick={onFinishForTime}
-          style={{ background: "transparent", border: `3px solid ${REST_COLOR}`, borderRadius: "10px", padding: "14px 36px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: REST_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${REST_COLOR}44`, transition: "all 0.2s ease" }}>
-          FINE
+          style={{ background: "#1E1E1E", border: `1px solid rgba(230,126,34,0.4)`, borderRadius: "20px", padding: "clamp(10px,1.4vh,18px) clamp(22px,2.8vw,44px)", fontFamily: "Inter,sans-serif", fontSize: "clamp(13px,1.6vw,22px)", fontWeight: 700, color: REST_COLOR, cursor: "pointer", letterSpacing: "0.1em", transition: "all 0.18s ease" }}>
+          Fine
         </button>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.15em", marginTop: "8px" }}>
-          <span className="dpad-hint">INVIO / ↓ = Fine &nbsp;|&nbsp; ⏸ PAUSA in alto • ESC = Menu</span>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em", marginTop: "4px" }}>
+          <span className="dpad-hint">INVIO / ↓ = Fine &nbsp;·&nbsp; ESC = Menu</span>
         </div>
       </div>
     );
@@ -547,38 +554,39 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
   if (mode === "EMOM") {
     return (
       <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,15px)", color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em" }}>MINUTO</div>
-        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,12vw,160px)", fontWeight: 700, color: WORK_COLOR, textShadow: `0 0 30px ${WORK_COLOR}`, lineHeight: 1 }}>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", textTransform: "uppercase" }}>Minuto</div>
+        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,12vw,160px)", fontWeight: 700, color: WORK_COLOR, lineHeight: 1 }}>
           {state.currentRound}
         </div>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(11px,1.2vw,16px)", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em" }}>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(11px,1.2vw,16px)", fontWeight: 400, color: "rgba(248,249,250,0.28)", letterSpacing: "0.05em" }}>
           di {state.totalRounds} totali
         </div>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.15em", marginTop: "8px" }}>
-          INVIO = Pausa • ESC = Menu
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em", marginTop: "8px" }}>
+          INVIO = Pausa &nbsp;·&nbsp; ESC = Menu
         </div>
       </div>
     );
   }
 
   /* ── TABATA ── */
+  const tabataColor = state.phase === "running" ? WORK_COLOR : REST_COLOR;
   return (
     <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "18px", minWidth: "clamp(160px,22vw,320px)" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(26px,3.8vw,52px)", fontWeight: 700, color: state.phase === "running" ? WORK_COLOR : REST_COLOR, textShadow: `0 0 20px ${state.phase === "running" ? WORK_COLOR : REST_COLOR}`, letterSpacing: "0.15em" }}>
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(22px,3.2vw,46px)", fontWeight: 700, color: tabataColor, letterSpacing: "0.06em" }}>
         {state.phase === "running" ? "LAVORA!" : "RECUPERO"}
       </div>
 
       {/* Sets per round dots */}
       <div>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.15em", marginBottom: "8px" }}>
-          ESERCIZIO {state.currentSet} / {setsPerRound}
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(9px,0.9vw,12px)", fontWeight: 500, color: "rgba(248,249,250,0.28)", letterSpacing: "0.14em", marginBottom: "8px", textTransform: "uppercase" }}>
+          Esercizio {state.currentSet} / {setsPerRound}
         </div>
         <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
           {Array.from({ length: setsPerRound }).map((_, i) => {
             const done    = i < state.currentSet - 1;
             const current = i === state.currentSet - 1;
             return (
-              <div key={i} style={{ width: 26, height: 26, borderRadius: 6, background: done ? `${WORK_COLOR}99` : current ? WORK_COLOR : "rgba(255,255,255,0.1)", boxShadow: current ? `0 0 10px ${WORK_COLOR}` : "none", transition: "all 0.3s ease" }} />
+              <div key={i} style={{ width: 24, height: 24, borderRadius: 6, background: done ? `${WORK_COLOR}55` : current ? WORK_COLOR : "rgba(255,255,255,0.09)", transition: "all 0.25s ease" }} />
             );
           })}
         </div>
@@ -586,22 +594,22 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
 
       {/* Round dots */}
       <div>
-        <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.15em", marginBottom: "8px" }}>
-          SERIE {state.currentRound} / {totalRounds}
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(9px,0.9vw,12px)", fontWeight: 500, color: "rgba(248,249,250,0.28)", letterSpacing: "0.14em", marginBottom: "8px", textTransform: "uppercase" }}>
+          Serie {state.currentRound} / {totalRounds}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", justifyContent: "center", maxWidth: "220px" }}>
           {Array.from({ length: totalRounds }).map((_, i) => {
             const done    = i < state.currentRound - 1;
             const current = i === state.currentRound - 1;
             return (
-              <div key={i} style={{ width: 22, height: 22, borderRadius: 5, background: done ? `${PAUSE_COLOR}99` : current ? PAUSE_COLOR : "rgba(255,255,255,0.1)", boxShadow: current ? `0 0 8px ${PAUSE_COLOR}` : "none", transition: "all 0.3s ease" }} />
+              <div key={i} style={{ width: 20, height: 20, borderRadius: 5, background: done ? `${PAUSE_COLOR}55` : current ? PAUSE_COLOR : "rgba(255,255,255,0.09)", transition: "all 0.25s ease" }} />
             );
           })}
         </div>
       </div>
 
-      <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.15em" }}>
-        INVIO = Pausa • ESC = Menu
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em" }}>
+        INVIO = Pausa &nbsp;·&nbsp; ESC = Menu
       </div>
     </div>
   );

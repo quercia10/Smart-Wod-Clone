@@ -59,7 +59,7 @@ export default function App() {
   }
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "#000", overflow: "hidden", position: "relative" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "#121212", overflow: "hidden", position: "relative" }}>
       <BackgroundLogo />
       <div style={{ position: "relative", zIndex: 2, width: "100%", height: "100%" }}>
         {screen === "gate" && (

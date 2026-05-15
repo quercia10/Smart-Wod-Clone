@@ -4,11 +4,11 @@ import { resumeAudio } from "@/lib/sound";
 
 const MODES: WorkoutMode[] = ["AMRAP", "FOR_TIME", "EMOM", "TABATA"];
 
-const MODE_COLORS_BG: Record<WorkoutMode, string> = {
-  AMRAP: "#00ff66",
-  FOR_TIME: "#ff8800",
-  EMOM: "#00ff66",
-  TABATA: "#ff3333",
+const MODE_COLORS: Record<WorkoutMode, string> = {
+  AMRAP:    "#2ECC71",
+  FOR_TIME: "#E67E22",
+  EMOM:     "#3498DB",
+  TABATA:   "#E74C3C",
 };
 
 interface MenuScreenProps {
@@ -26,8 +26,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
 
   const handleSelect = useCallback((index: number) => {
     resumeAudio();
-    const mode = MODES[index];
-    onSelect({ mode });
+    onSelect({ mode: MODES[index] });
   }, [onSelect]);
 
   useEffect(() => {
@@ -52,43 +51,14 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
   }, [focused, handleSelect, moveFocus]);
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        background: "transparent",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 0,
-      }}
-    >
+    <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+
       {/* Header */}
-      <div style={{ textAlign: "center", marginBottom: "6vh" }}>
-        <div
-          style={{
-            fontFamily: "Oswald, sans-serif",
-            fontSize: "clamp(28px, 4vw, 56px)",
-            fontWeight: 700,
-            letterSpacing: "0.25em",
-            color: "#00ff66",
-            textShadow: "0 0 20px #00ff66, 0 0 40px #00ff66",
-            textTransform: "uppercase",
-          }}
-        >
+      <div style={{ textAlign: "center", marginBottom: "5vh" }}>
+        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(22px, 3.2vw, 48px)", fontWeight: 700, letterSpacing: "0.06em", color: "#F8F9FA", textTransform: "uppercase" }}>
           SmartWOD Timer
         </div>
-        <div
-          style={{
-            fontFamily: "Roboto, sans-serif",
-            fontSize: "clamp(12px, 1.5vw, 20px)",
-            color: "rgba(255,255,255,0.4)",
-            letterSpacing: "0.3em",
-            marginTop: "0.5vh",
-            textTransform: "uppercase",
-          }}
-        >
+        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(11px, 1.3vw, 18px)", color: "rgba(248,249,250,0.42)", letterSpacing: "0.18em", marginTop: "6px", fontWeight: 400, textTransform: "uppercase" }}>
           Scegli la modalità di allenamento
         </div>
       </div>
@@ -97,7 +67,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
       <div className="menu-grid">
         {MODES.map((mode, i) => {
           const isFocused = focused === i;
-          const color = MODE_COLORS_BG[mode];
+          const accent = MODE_COLORS[mode];
           return (
             <button
               key={mode}
@@ -105,51 +75,29 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
               data-testid={`mode-btn-${mode}`}
               tabIndex={0}
               onClick={() => handleSelect(i)}
-              onFocus={() => { setFocused(i); }}
+              onFocus={() => setFocused(i)}
               className="wod-btn"
               style={{
-                background: isFocused ? `rgba(${hexToRgb(color)}, 0.12)` : "rgba(255,255,255,0.03)",
-                border: `3px solid ${isFocused ? color : "rgba(255,255,255,0.12)"}`,
-                borderRadius: "12px",
-                padding: "clamp(20px, 3vh, 48px) clamp(12px, 1.5vw, 24px)",
+                background: isFocused ? "#F8F9FA" : "#1E1E1E",
+                border: `1px solid ${isFocused ? "transparent" : "rgba(255,255,255,0.10)"}`,
+                borderRadius: "20px",
+                padding: "clamp(18px, 2.8vh, 44px) clamp(10px, 1.4vw, 22px)",
                 cursor: "pointer",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: "12px",
-                transition: "all 0.2s ease",
-                transform: isFocused ? "scale(1.05)" : "scale(1)",
-                boxShadow: isFocused
-                  ? `0 0 30px ${color}66, 0 0 60px ${color}33, inset 0 0 20px ${color}1a`
-                  : "none",
+                gap: "10px",
+                transition: "all 0.18s ease",
+                transform: isFocused ? "scale(1.04)" : "scale(1)",
+                boxShadow: isFocused ? "0 8px 32px rgba(0,0,0,0.45)" : "0 2px 8px rgba(0,0,0,0.25)",
               }}
             >
-              {/* Mode icon */}
-              <ModeIcon mode={mode} color={color} isFocused={isFocused} />
+              <ModeIcon mode={mode} color={isFocused ? "#121212" : accent} />
 
-              <div
-                style={{
-                  fontFamily: "Oswald, sans-serif",
-                  fontSize: "clamp(22px, 2.5vw, 40px)",
-                  fontWeight: 700,
-                  letterSpacing: "0.1em",
-                  color: isFocused ? color : "white",
-                  textShadow: isFocused ? `0 0 15px ${color}` : "none",
-                  transition: "all 0.2s ease",
-                }}
-              >
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(18px, 2.2vw, 34px)", fontWeight: 700, letterSpacing: "0.04em", color: isFocused ? "#121212" : "#F8F9FA", transition: "color 0.18s ease" }}>
                 {MODE_LABELS[mode]}
               </div>
-              <div
-                style={{
-                  fontFamily: "Roboto, sans-serif",
-                  fontSize: "clamp(10px, 1.1vw, 16px)",
-                  color: "rgba(255,255,255,0.5)",
-                  textAlign: "center",
-                  letterSpacing: "0.05em",
-                  lineHeight: 1.3,
-                }}
-              >
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(10px, 1vw, 14px)", color: isFocused ? "rgba(18,18,18,0.58)" : "rgba(248,249,250,0.42)", textAlign: "center", letterSpacing: "0.03em", lineHeight: 1.4, fontWeight: 400 }}>
                 {MODE_SUBTITLES[mode]}
               </div>
             </button>
@@ -158,81 +106,60 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
       </div>
 
       {/* Footer hint */}
-      <div
-        style={{
-          marginTop: "5vh",
-          fontFamily: "Roboto, sans-serif",
-          fontSize: "clamp(10px, 1vw, 14px)",
-          color: "rgba(255,255,255,0.2)",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-        }}
-      >
-        <span className="dpad-hint">← → D-Pad &nbsp;|&nbsp; INVIO Seleziona &nbsp;|&nbsp; ESC Esci</span>
+      <div style={{ marginTop: "4vh", fontFamily: "Inter, sans-serif", fontSize: "clamp(10px, 0.9vw, 13px)", color: "rgba(248,249,250,0.2)", letterSpacing: "0.15em", textTransform: "uppercase", fontWeight: 400 }}>
+        <span className="dpad-hint">← → D-Pad &nbsp;·&nbsp; INVIO Seleziona</span>
         <span className="touch-hint">Tocca una modalità per iniziare</span>
       </div>
     </div>
   );
 }
 
-function hexToRgb(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r}, ${g}, ${b}`;
-}
-
-function ModeIcon({ mode, color, isFocused }: { mode: WorkoutMode; color: string; isFocused: boolean }) {
-  const size = 52;
-  const style: React.CSSProperties = {
-    width: size,
-    height: size,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    filter: isFocused ? `drop-shadow(0 0 8px ${color})` : "none",
-    transition: "filter 0.2s ease",
-  };
+function ModeIcon({ mode, color }: { mode: WorkoutMode; color: string }) {
+  const size = 48;
+  const s: React.CSSProperties = { width: size, height: size, display: "flex", alignItems: "center", justifyContent: "center" };
 
   if (mode === "AMRAP") {
     return (
-      <div style={style}>
-        <svg width={size} height={size} viewBox="0 0 52 52" fill="none">
-          <circle cx="26" cy="26" r="22" stroke={isFocused ? color : "rgba(255,255,255,0.4)"} strokeWidth="3" strokeDasharray="6 4" />
-          <path d="M26 12 L26 26 L36 36" stroke={isFocused ? color : "rgba(255,255,255,0.6)"} strokeWidth="3.5" strokeLinecap="round" />
-          <circle cx="26" cy="26" r="3" fill={isFocused ? color : "rgba(255,255,255,0.6)"} />
+      <div style={s}>
+        <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="24" r="18" stroke={color} strokeWidth="2.5" />
+          <path d="M24 13 L24 24 L33 33" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="24" cy="24" r="2.5" fill={color} />
         </svg>
       </div>
     );
   }
   if (mode === "FOR_TIME") {
     return (
-      <div style={style}>
-        <svg width={size} height={size} viewBox="0 0 52 52" fill="none">
-          <polygon points="14,8 42,26 14,44" fill={isFocused ? color : "rgba(255,255,255,0.5)"} />
+      <div style={s}>
+        <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+          <circle cx="24" cy="26" r="16" stroke={color} strokeWidth="2.5" />
+          <path d="M19 8 h10" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M24 10 v4" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M24 20 v7" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+          <path d="M24 27 l5 5" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       </div>
     );
   }
   if (mode === "EMOM") {
     return (
-      <div style={style}>
-        <svg width={size} height={size} viewBox="0 0 52 52" fill="none">
-          <rect x="8" y="16" width="10" height="24" rx="3" fill={isFocused ? color : "rgba(255,255,255,0.5)"} />
-          <rect x="21" y="10" width="10" height="30" rx="3" fill={isFocused ? color : "rgba(255,255,255,0.5)"} />
-          <rect x="34" y="20" width="10" height="20" rx="3" fill={isFocused ? color : "rgba(255,255,255,0.5)"} />
+      <div style={s}>
+        <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+          <rect x="6"  y="20" width="8"  height="22" rx="2" fill={color} opacity="0.55" />
+          <rect x="20" y="12" width="8"  height="30" rx="2" fill={color} />
+          <rect x="34" y="26" width="8"  height="16" rx="2" fill={color} opacity="0.55" />
         </svg>
       </div>
     );
   }
-  // TABATA
   return (
-    <div style={style}>
-      <svg width={size} height={size} viewBox="0 0 52 52" fill="none">
-        <rect x="8" y="8" width="16" height="16" rx="3" fill={isFocused ? color : "rgba(255,255,255,0.5)"} />
-        <rect x="28" y="8" width="16" height="16" rx="3" fill={isFocused ? "rgba(255,136,0,0.8)" : "rgba(255,255,255,0.3)"} />
-        <rect x="8" y="28" width="16" height="16" rx="3" fill={isFocused ? color : "rgba(255,255,255,0.5)"} />
-        <rect x="28" y="28" width="16" height="16" rx="3" fill={isFocused ? "rgba(255,136,0,0.8)" : "rgba(255,255,255,0.3)"} />
+    <div style={s}>
+      <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+        <rect x="6"  y="6"  width="16" height="16" rx="4" fill={color} />
+        <rect x="26" y="6"  width="16" height="16" rx="4" fill={color} opacity="0.38" />
+        <rect x="6"  y="26" width="16" height="16" rx="4" fill={color} opacity="0.38" />
+        <rect x="26" y="26" width="16" height="16" rx="4" fill={color} />
       </svg>
     </div>
   );

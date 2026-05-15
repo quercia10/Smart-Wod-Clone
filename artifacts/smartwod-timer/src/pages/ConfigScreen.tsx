@@ -9,45 +9,43 @@ interface ConfigScreenProps {
 }
 
 type FieldDef = {
-  key: string;
-  label: string;
-  unit: string;
-  min: number;
-  max: number;
-  step: number;
-  default: number;
+  key: string; label: string; unit: string;
+  min: number; max: number; step: number; default: number;
 };
 
 const FIELDS: Record<WorkoutMode, FieldDef[]> = {
-  AMRAP: [
-    { key: "duration", label: "Durata", unit: "min", min: 1, max: 60, step: 1, default: 10 },
-  ],
-  FOR_TIME: [
-    { key: "duration", label: "Cap di Tempo", unit: "min", min: 1, max: 90, step: 1, default: 20 },
-  ],
+  AMRAP:    [{ key: "duration",       label: "Durata",              unit: "min",    min: 1,  max: 60,  step: 1,  default: 10 }],
+  FOR_TIME: [{ key: "duration",       label: "Cap di Tempo",        unit: "min",    min: 1,  max: 90,  step: 1,  default: 20 }],
   EMOM: [
-    { key: "duration", label: "Durata intervallo", unit: "min", min: 1, max: 2, step: 1, default: 1 },
-    { key: "rounds", label: "Numero Round", unit: "round", min: 1, max: 60, step: 1, default: 10 },
+    { key: "duration",  label: "Durata intervallo",  unit: "min",   min: 1,  max: 2,   step: 1,  default: 1  },
+    { key: "rounds",    label: "Numero Round",        unit: "round", min: 1,  max: 60,  step: 1,  default: 10 },
   ],
   TABATA: [
-    { key: "rounds", label: "Numero Serie", unit: "serie", min: 1, max: 12, step: 1, default: 4 },
-    { key: "setsPerRound", label: "Esercizi per Serie", unit: "eserc.", min: 1, max: 8, step: 1, default: 2 },
-    { key: "workTime", label: "Tempo Lavoro", unit: "sec", min: 5, max: 60, step: 5, default: 20 },
-    { key: "restTime", label: "Recupero Esercizio", unit: "sec", min: 5, max: 60, step: 5, default: 10 },
-    { key: "roundPauseTime", label: "Pausa Serie", unit: "sec", min: 10, max: 120, step: 10, default: 60 },
+    { key: "rounds",         label: "Numero Serie",        unit: "serie",  min: 1,  max: 12,  step: 1,  default: 4  },
+    { key: "setsPerRound",   label: "Esercizi per Serie",  unit: "eserc.", min: 1,  max: 8,   step: 1,  default: 2  },
+    { key: "workTime",       label: "Tempo Lavoro",        unit: "sec",    min: 5,  max: 60,  step: 5,  default: 20 },
+    { key: "restTime",       label: "Recupero Esercizio",  unit: "sec",    min: 5,  max: 60,  step: 5,  default: 10 },
+    { key: "roundPauseTime", label: "Pausa Serie",         unit: "sec",    min: 10, max: 120, step: 10, default: 60 },
   ],
 };
 
-const MODE_COLOR: Record<WorkoutMode, string> = {
-  AMRAP: "#00ff66",
-  FOR_TIME: "#ff8800",
-  EMOM: "#00ff66",
-  TABATA: "#ff3333",
+const MODE_COLORS: Record<WorkoutMode, string> = {
+  AMRAP:    "#2ECC71",
+  FOR_TIME: "#E67E22",
+  EMOM:     "#3498DB",
+  TABATA:   "#E74C3C",
 };
+
+function hexToRgb(hex: string) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `${r},${g},${b}`;
+}
 
 export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProps) {
   const fields = FIELDS[mode];
-  const color = MODE_COLOR[mode];
+  const accent = MODE_COLORS[mode];
 
   const [values, setValues] = useState<Record<string, number>>(() => {
     const init: Record<string, number> = {};
@@ -56,11 +54,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
   });
 
   const [focusedField, setFocusedField] = useState(0);
-  // focusedField: 0..fields.length-1 = config rows, fields.length = START button
-
-  const totalItems = fields.length + 1; // +1 for START button
-
-  // Refs: indices 0..fields.length-1 are field rows, fields.length is START button
+  const totalItems = fields.length + 1;
   const itemRefs = useRef<(HTMLElement | null)[]>([]);
 
   const moveFocus = useCallback((index: number) => {
@@ -68,10 +62,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
     itemRefs.current[index]?.focus();
   }, []);
 
-  // Auto-focus first item on mount
-  useEffect(() => {
-    itemRefs.current[0]?.focus();
-  }, []);
+  useEffect(() => { itemRefs.current[0]?.focus(); }, []);
 
   const changeValue = useCallback((fieldIndex: number, delta: number) => {
     const field = fields[fieldIndex];
@@ -95,28 +86,14 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
-      if (e.key === "Escape" || e.key === "Backspace") {
-        onBack();
-        return;
-      }
-      if (e.key === "ArrowUp") {
+      if (e.key === "Escape" || e.key === "Backspace") { onBack(); return; }
+      if (e.key === "ArrowUp") { e.preventDefault(); moveFocus((focusedField - 1 + totalItems) % totalItems); }
+      else if (e.key === "ArrowDown") { e.preventDefault(); moveFocus((focusedField + 1) % totalItems); }
+      else if (e.key === "ArrowLeft") { e.preventDefault(); if (focusedField < fields.length) changeValue(focusedField, -1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); if (focusedField < fields.length) changeValue(focusedField, 1); }
+      else if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        moveFocus((focusedField - 1 + totalItems) % totalItems);
-      } else if (e.key === "ArrowDown") {
-        e.preventDefault();
-        moveFocus((focusedField + 1) % totalItems);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        if (focusedField < fields.length) changeValue(focusedField, -1);
-      } else if (e.key === "ArrowRight") {
-        e.preventDefault();
-        if (focusedField < fields.length) changeValue(focusedField, 1);
-      } else if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        if (focusedField === fields.length) {
-          resumeAudio();
-          onStart(buildConfig());
-        }
+        if (focusedField === fields.length) { resumeAudio(); onStart(buildConfig()); }
       }
     }
     window.addEventListener("keydown", handleKey);
@@ -124,42 +101,15 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
   }, [focusedField, fields.length, totalItems, changeValue, buildConfig, onStart, onBack, moveFocus]);
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        background: "transparent",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 0,
-      }}
-    >
+    <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+
       {/* Mode title */}
-      <div style={{ textAlign: "center", marginBottom: "5vh" }}>
-        <div
-          style={{
-            fontFamily: "Oswald, sans-serif",
-            fontSize: "clamp(32px, 5vw, 72px)",
-            fontWeight: 700,
-            color,
-            textShadow: `0 0 20px ${color}, 0 0 40px ${color}`,
-            letterSpacing: "0.2em",
-          }}
-        >
+      <div style={{ textAlign: "center", marginBottom: "4vh" }}>
+        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(28px, 4.5vw, 64px)", fontWeight: 700, color: accent, letterSpacing: "0.08em", textTransform: "uppercase" }}>
           {mode.replace("_", " ")}
         </div>
-        <div
-          style={{
-            fontFamily: "Roboto, sans-serif",
-            fontSize: "clamp(12px, 1.5vw, 20px)",
-            color: "rgba(255,255,255,0.4)",
-            letterSpacing: "0.2em",
-            marginTop: "0.5vh",
-          }}
-        >
-          CONFIGURA L'ALLENAMENTO
+        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(11px, 1.2vw, 17px)", color: "rgba(248,249,250,0.38)", letterSpacing: "0.18em", marginTop: "6px", textTransform: "uppercase" }}>
+          Configura l'allenamento
         </div>
       </div>
 
@@ -176,72 +126,47 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
               onClick={() => moveFocus(i)}
               onFocus={() => setFocusedField(i)}
               style={{
-                background: isFocused ? `rgba(${hexToRgb(color)}, 0.1)` : "rgba(255,255,255,0.03)",
-                border: `2px solid ${isFocused ? color : "rgba(255,255,255,0.1)"}`,
-                borderRadius: "10px",
-                padding: "clamp(12px, 2vh, 24px) clamp(20px, 3vw, 40px)",
+                background: isFocused ? "#F8F9FA" : "#1E1E1E",
+                border: `1px solid ${isFocused ? "transparent" : "rgba(255,255,255,0.10)"}`,
+                borderRadius: "16px",
+                padding: "clamp(12px, 1.8vh, 22px) clamp(18px, 2.5vw, 36px)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                transition: "all 0.2s ease",
-                boxShadow: isFocused ? `0 0 20px ${color}44` : "none",
+                transition: "all 0.18s ease",
+                boxShadow: isFocused ? "0 6px 24px rgba(0,0,0,0.4)" : "0 1px 4px rgba(0,0,0,0.2)",
+                transform: isFocused ? "scale(1.02)" : "scale(1)",
                 outline: "none",
+                cursor: "pointer",
               }}
             >
-              <div
-                style={{
-                  fontFamily: "Oswald, sans-serif",
-                  fontSize: "clamp(18px, 2vw, 30px)",
-                  color: isFocused ? "white" : "rgba(255,255,255,0.7)",
-                  letterSpacing: "0.1em",
-                  textTransform: "uppercase",
-                  fontWeight: 400,
-                }}
-              >
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(15px, 1.8vw, 26px)", fontWeight: 500, color: isFocused ? "#121212" : "#F8F9FA", letterSpacing: "0.02em" }}>
                 {field.label}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 1.2vw, 20px)" }}>
-                {isFocused && (
-                  <span className="dpad-hint" style={{ color: "rgba(255,255,255,0.3)", fontSize: "clamp(16px, 2vw, 28px)" }}>←</span>
-                )}
+
+              <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 1.2vw, 18px)" }}>
+                {isFocused && <span className="dpad-hint" style={{ color: "rgba(18,18,18,0.35)", fontSize: "clamp(14px,1.8vw,24px)" }}>←</span>}
+
                 <button
                   className="touch-stepper stepper-btn wod-btn"
-                  style={{ borderColor: isFocused ? `${color}66` : undefined }}
+                  style={{ background: isFocused ? "rgba(18,18,18,0.08)" : undefined, borderColor: isFocused ? "rgba(18,18,18,0.18)" : undefined, color: isFocused ? "#121212" : undefined }}
                   onClick={(e) => { e.stopPropagation(); setFocusedField(i); changeValue(i, -1); }}
                 >−</button>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "8px", minWidth: "6ch", justifyContent: "center" }}>
-                  <span
-                    style={{
-                      fontFamily: "Oswald, sans-serif",
-                      fontSize: "clamp(28px, 4vw, 56px)",
-                      fontWeight: 700,
-                      color: isFocused ? color : "white",
-                      textShadow: isFocused ? `0 0 15px ${color}` : "none",
-                      minWidth: "4ch",
-                      textAlign: "center",
-                      display: "inline-block",
-                    }}
-                  >
+
+                <div style={{ display: "flex", alignItems: "baseline", gap: "7px", minWidth: "6ch", justifyContent: "center" }}>
+                  <span style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(26px, 3.6vw, 52px)", fontWeight: 700, color: isFocused ? accent : "#F8F9FA", minWidth: "4ch", textAlign: "center", display: "inline-block", transition: "color 0.18s" }}>
                     {values[field.key]}
                   </span>
-                  <span
-                    style={{
-                      fontFamily: "Roboto, sans-serif",
-                      fontSize: "clamp(12px, 1.2vw, 18px)",
-                      color: "rgba(255,255,255,0.4)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.1em",
-                    }}
-                  >
+                  <span style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(11px, 1.1vw, 16px)", color: isFocused ? "rgba(18,18,18,0.5)" : "rgba(248,249,250,0.38)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {field.unit}
                   </span>
                 </div>
-                {isFocused && (
-                  <span className="dpad-hint" style={{ color: "rgba(255,255,255,0.3)", fontSize: "clamp(16px, 2vw, 28px)" }}>→</span>
-                )}
+
+                {isFocused && <span className="dpad-hint" style={{ color: "rgba(18,18,18,0.35)", fontSize: "clamp(14px,1.8vw,24px)" }}>→</span>}
+
                 <button
                   className="touch-stepper stepper-btn wod-btn"
-                  style={{ borderColor: isFocused ? `${color}66` : undefined }}
+                  style={{ background: isFocused ? "rgba(18,18,18,0.08)" : undefined, borderColor: isFocused ? "rgba(18,18,18,0.18)" : undefined, color: isFocused ? "#121212" : undefined }}
                   onClick={(e) => { e.stopPropagation(); setFocusedField(i); changeValue(i, 1); }}
                 >+</button>
               </div>
@@ -258,21 +183,19 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
           onClick={() => { resumeAudio(); onStart(buildConfig()); }}
           onFocus={() => setFocusedField(fields.length)}
           style={{
-            marginTop: "clamp(8px, 1.5vh, 20px)",
-            background: focusedField === fields.length ? color : "transparent",
-            border: `3px solid ${color}`,
-            borderRadius: "10px",
-            padding: "clamp(14px, 2.5vh, 28px)",
-            fontFamily: "Oswald, sans-serif",
-            fontSize: "clamp(20px, 2.5vw, 36px)",
+            marginTop: "clamp(6px, 1.2vh, 16px)",
+            background: focusedField === fields.length ? accent : "#1E1E1E",
+            border: `1px solid ${focusedField === fields.length ? "transparent" : `rgba(${hexToRgb(accent)},0.45)`}`,
+            borderRadius: "20px",
+            padding: "clamp(13px, 2.2vh, 26px)",
+            fontFamily: "Inter, sans-serif",
+            fontSize: "clamp(17px, 2.2vw, 32px)",
             fontWeight: 700,
-            letterSpacing: "0.2em",
-            color: focusedField === fields.length ? "#000" : color,
+            letterSpacing: "0.14em",
+            color: focusedField === fields.length ? "#121212" : accent,
             cursor: "pointer",
-            transition: "all 0.2s ease",
-            boxShadow: focusedField === fields.length
-              ? `0 0 30px ${color}, 0 0 60px ${color}66`
-              : `0 0 10px ${color}44`,
+            transition: "all 0.18s ease",
+            boxShadow: focusedField === fields.length ? "0 8px 28px rgba(0,0,0,0.45)" : "0 1px 4px rgba(0,0,0,0.2)",
             transform: focusedField === fields.length ? "scale(1.03)" : "scale(1)",
           }}
         >
@@ -281,26 +204,10 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
       </div>
 
       {/* Back hint */}
-      <div
-        style={{
-          marginTop: "4vh",
-          fontFamily: "Roboto, sans-serif",
-          fontSize: "clamp(10px, 1vw, 14px)",
-          color: "rgba(255,255,255,0.2)",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-        }}
-      >
-        <span className="dpad-hint">ESC ← Indietro &nbsp;|&nbsp; ↑ ↓ Naviga &nbsp;|&nbsp; ← → Modifica</span>
-        <span className="touch-hint">Tocca + − per modificare &nbsp;|&nbsp; INIZIA per partire</span>
+      <div style={{ marginTop: "3.5vh", fontFamily: "Inter, sans-serif", fontSize: "clamp(10px, 0.9vw, 13px)", color: "rgba(248,249,250,0.18)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
+        <span className="dpad-hint">ESC Indietro &nbsp;·&nbsp; ↑↓ Naviga &nbsp;·&nbsp; ←→ Modifica</span>
+        <span className="touch-hint">Tocca +− per modificare &nbsp;·&nbsp; INIZIA per partire</span>
       </div>
     </div>
   );
-}
-
-function hexToRgb(hex: string): string {
-  const r = parseInt(hex.slice(1, 3), 16);
-  const g = parseInt(hex.slice(3, 5), 16);
-  const b = parseInt(hex.slice(5, 7), 16);
-  return `${r}, ${g}, ${b}`;
 }

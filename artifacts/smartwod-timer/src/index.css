@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Roboto:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -56,70 +56,69 @@
 }
 
 :root {
-  --button-outline: rgba(0,0,0, .10);
-  --badge-outline: rgba(0,0,0, .05);
+  --button-outline: rgba(0,0,0,.10);
+  --badge-outline: rgba(0,0,0,.05);
   --opaque-button-border-intensity: -8;
-  --elevate-1: rgba(0,0,0, .03);
-  --elevate-2: rgba(0,0,0, .08);
+  --elevate-1: rgba(0,0,0,.05);
+  --elevate-2: rgba(0,0,0,.10);
 
-  --background: 0 0% 0%;
-  --foreground: 0 0% 100%;
-  --border: 0 0% 20%;
-  --card: 0 0% 6%;
-  --card-foreground: 0 0% 100%;
-  --card-border: 0 0% 15%;
-  --sidebar: 0 0% 4%;
-  --sidebar-foreground: 0 0% 100%;
-  --sidebar-border: 0 0% 15%;
-  --sidebar-primary: 142 100% 50%;
+  --background: 0 0% 7%;
+  --foreground: 210 17% 98%;
+  --border: 0 0% 18%;
+  --card: 0 0% 12%;
+  --card-foreground: 210 17% 98%;
+  --card-border: 0 0% 16%;
+  --sidebar: 0 0% 9%;
+  --sidebar-foreground: 210 17% 98%;
+  --sidebar-border: 0 0% 16%;
+  --sidebar-primary: 145 63% 49%;
   --sidebar-primary-foreground: 0 0% 0%;
-  --sidebar-accent: 0 0% 10%;
-  --sidebar-accent-foreground: 0 0% 100%;
-  --sidebar-ring: 142 100% 50%;
-  --popover: 0 0% 6%;
-  --popover-foreground: 0 0% 100%;
-  --popover-border: 0 0% 20%;
-  --primary: 142 100% 50%;
+  --sidebar-accent: 0 0% 14%;
+  --sidebar-accent-foreground: 210 17% 98%;
+  --sidebar-ring: 145 63% 49%;
+  --popover: 0 0% 12%;
+  --popover-foreground: 210 17% 98%;
+  --popover-border: 0 0% 18%;
+  --primary: 145 63% 49%;
   --primary-foreground: 0 0% 0%;
-  --secondary: 0 0% 12%;
-  --secondary-foreground: 0 0% 100%;
-  --muted: 0 0% 10%;
-  --muted-foreground: 0 0% 60%;
-  --accent: 0 0% 12%;
-  --accent-foreground: 0 0% 100%;
-  --destructive: 0 90% 55%;
+  --secondary: 0 0% 14%;
+  --secondary-foreground: 210 17% 98%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 55%;
+  --accent: 0 0% 14%;
+  --accent-foreground: 210 17% 98%;
+  --destructive: 4 90% 58%;
   --destructive-foreground: 0 0% 100%;
-  --input: 0 0% 20%;
-  --ring: 142 100% 50%;
-  --chart-1: 142 100% 50%;
-  --chart-2: 0 90% 55%;
-  --chart-3: 30 100% 55%;
-  --chart-4: 210 100% 60%;
-  --chart-5: 270 100% 60%;
+  --input: 0 0% 18%;
+  --ring: 145 63% 49%;
+  --chart-1: 145 63% 49%;
+  --chart-2: 28 80% 52%;
+  --chart-3: 207 82% 53%;
+  --chart-4: 4 90% 58%;
+  --chart-5: 270 80% 60%;
 
-  --app-font-sans: 'Oswald', 'Roboto', sans-serif;
+  --app-font-sans: 'Inter', 'Oswald', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: Menlo, monospace;
-  --radius: .375rem;
+  --radius: .5rem;
 
-  --neon-green: #00ff66;
-  --neon-red: #ff3333;
-  --neon-orange: #ff8800;
+  /* Design tokens */
+  --color-work:    #2ECC71;
+  --color-rest:    #E67E22;
+  --color-pause:   #3498DB;
+  --color-danger:  #E74C3C;
+  --color-text:    #F8F9FA;
+  --color-surface: #1E1E1E;
+  --color-bg:      #121212;
+  --color-border-subtle: rgba(255,255,255,0.10);
 
   --primary-border: hsl(var(--primary));
-  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --secondary-border: hsl(var(--secondary));
-  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --muted-border: hsl(var(--muted));
-  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --accent-border: hsl(var(--accent));
-  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --destructive-border: hsl(var(--destructive));
-  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --sidebar-primary-border: hsl(var(--sidebar-primary));
-  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
   --sidebar-accent-border: hsl(var(--sidebar-accent));
-  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
 }
 
 @layer base {
@@ -135,61 +134,18 @@
     overflow: hidden;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Oswald', 'Roboto', sans-serif;
+    background: #121212;
+    color: #F8F9FA;
+    font-family: 'Inter', 'Oswald', sans-serif;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer utilities {
-  .neon-green {
-    color: var(--neon-green);
-  }
-  .neon-red {
-    color: var(--neon-red);
-  }
-  .neon-orange {
-    color: var(--neon-orange);
-  }
-  .neon-glow-green {
-    text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green), 0 0 80px var(--neon-green);
-  }
-  .neon-glow-red {
-    text-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red), 0 0 80px var(--neon-red);
-  }
-  .neon-glow-orange {
-    text-shadow: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-orange), 0 0 80px var(--neon-orange);
-  }
-  .neon-border-green {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 15px var(--neon-green), inset 0 0 15px rgba(0,255,102,0.1);
-  }
-  .neon-border-red {
-    border-color: var(--neon-red);
-    box-shadow: 0 0 15px var(--neon-red), inset 0 0 15px rgba(255,51,51,0.1);
-  }
-  .neon-border-orange {
-    border-color: var(--neon-orange);
-    box-shadow: 0 0 15px var(--neon-orange), inset 0 0 15px rgba(255,136,0,0.1);
-  }
-  .focus-neon:focus {
-    outline: none;
-    border-color: var(--neon-green) !important;
-    box-shadow: 0 0 20px var(--neon-green), 0 0 40px rgba(0,255,102,0.3) !important;
-  }
-  .menu-item-focused {
-    border-color: var(--neon-green);
-    box-shadow: 0 0 25px var(--neon-green), 0 0 50px rgba(0,255,102,0.3), inset 0 0 20px rgba(0,255,102,0.1);
-    transform: scale(1.04);
-  }
-  .menu-item-focused-orange {
-    border-color: var(--neon-orange);
-    box-shadow: 0 0 25px var(--neon-orange), 0 0 50px rgba(255,136,0,0.3), inset 0 0 20px rgba(255,136,0,0.1);
-    transform: scale(1.04);
-  }
   .tv-font {
-    font-family: 'Oswald', sans-serif;
-    letter-spacing: 0.05em;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
   }
   .timer-digits {
     font-family: 'Oswald', sans-serif;
@@ -198,44 +154,45 @@
   }
 }
 
-@keyframes pulse-neon {
+/* ═══════════════════════════ Keyframe Animations ═══════════════════════════ */
+
+@keyframes pulse-subtle {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  50%       { opacity: 0.7; }
 }
 @keyframes scale-in {
-  from { transform: scale(0.5); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from { transform: scale(0.88); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
 }
 @keyframes countdown-num {
-  0% { transform: scale(1.5); opacity: 0; }
-  20% { transform: scale(1); opacity: 1; }
-  80% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(0.5); opacity: 0; }
+  0%   { transform: scale(1.3); opacity: 0; }
+  18%  { transform: scale(1);   opacity: 1; }
+  82%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0; }
 }
-@keyframes flash-red {
+@keyframes flash-surface {
   0%, 100% { background-color: transparent; }
-  50% { background-color: rgba(255,51,51,0.15); }
+  50%       { background-color: rgba(231,76,60,0.12); }
 }
 @keyframes timer-warning-blink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.45; }
+  0%, 100% { opacity: 1;    }
+  50%       { opacity: 0.42; }
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  15%     { transform: translateX(-10px); }
+  30%     { transform: translateX(10px); }
+  45%     { transform: translateX(-7px); }
+  60%     { transform: translateX(7px); }
+  75%     { transform: translateX(-4px); }
+  90%     { transform: translateX(4px); }
 }
 
-.animate-pulse-neon {
-  animation: pulse-neon 1s ease-in-out infinite;
-}
-.animate-scale-in {
-  animation: scale-in 0.3s ease-out;
-}
-.animate-countdown-num {
-  animation: countdown-num 1s ease-in-out;
-}
-.animate-flash-red {
-  animation: flash-red 0.5s ease-in-out 3;
-}
-.timer-warning {
-  animation: timer-warning-blink 0.5s ease-in-out infinite;
-}
+.animate-pulse-subtle  { animation: pulse-subtle 1.4s ease-in-out infinite; }
+.animate-scale-in      { animation: scale-in 0.28s ease-out; }
+.animate-countdown-num { animation: countdown-num 1s ease-in-out; }
+.animate-flash-surface { animation: flash-surface 0.5s ease-in-out 3; }
+.timer-warning         { animation: timer-warning-blink 0.5s ease-in-out infinite; }
 
 /* ═══════════════════════════ Responsive Layout ═══════════════════════════ */
 
@@ -243,8 +200,8 @@
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: clamp(12px, 2vw, 32px);
-  width: 90vw;
+  gap: clamp(12px, 2vw, 28px);
+  width: 88vw;
   max-width: 1400px;
 }
 
@@ -258,21 +215,30 @@
   padding: 2vh 4vw;
 }
 
-/* Timer logo: a sinistra del cerchio in landscape */
-.timer-logo {
-  width: clamp(56px, 7vw, 96px);
-  height: auto;
-  object-fit: contain;
+/* Timer logo in circle */
+.timer-logo-wrap {
+  width: clamp(60px, 7vw, 96px);
+  height: clamp(60px, 7vw, 96px);
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(255,255,255,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   flex-shrink: 0;
-  opacity: 1;
-  filter: drop-shadow(0 0 10px rgba(0, 255, 102, 0.25));
+}
+.timer-logo-wrap img {
+  width: 68%;
+  height: 68%;
+  object-fit: contain;
 }
 
 /* Config fields container */
 .config-fields {
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 2vh, 24px);
+  gap: clamp(10px, 1.8vh, 20px);
   width: clamp(300px, 60vw, 800px);
 }
 
@@ -283,9 +249,7 @@
 }
 
 /* D-pad keyboard hints: visible on TV/landscape */
-.dpad-hint {
-  display: inline;
-}
+.dpad-hint { display: inline; }
 
 /* All interactive elements: minimum 44×44 touch target */
 .wod-btn {
@@ -295,29 +259,28 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Tap feedback mirrors D-pad focus neon glow */
 .wod-btn:active {
-  filter: brightness(1.3);
+  filter: brightness(0.9);
 }
 
-/* Touch +/- stepper base style */
+/* Touch +/- stepper */
 .stepper-btn {
-  width: 52px;
-  height: 52px;
-  border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.18);
-  background: rgba(255, 255, 255, 0.07);
-  color: rgba(255, 255, 255, 0.85);
-  font-family: 'Oswald', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.14);
+  background: rgba(255,255,255,0.06);
+  color: #F8F9FA;
+  font-family: 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  transition: background 0.12s ease, border-color 0.12s ease;
+  transition: background 0.12s ease;
   outline: none;
   user-select: none;
   line-height: 1;
@@ -325,20 +288,18 @@
 
 .stepper-btn:active,
 .stepper-btn:focus {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.3);
 }
 
 /* ═══════════════════════════ Portrait / Mobile ═══════════════════════════ */
 @media (orientation: portrait), (max-width: 680px) {
-  /* 2-col menu grid */
   .menu-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: clamp(10px, 3vw, 20px);
+    gap: clamp(10px, 3vw, 18px);
     width: 94vw;
   }
 
-  /* Timer: circle top, panel below */
   .timer-main {
     flex-direction: column;
     gap: 2vh;
@@ -347,64 +308,51 @@
     justify-content: center;
   }
 
-  /* Logo più piccolo e sopra il cerchio in portrait */
-  .timer-logo {
-    width: clamp(36px, 10vw, 58px);
-    filter: drop-shadow(0 0 6px rgba(0, 255, 102, 0.2));
+  .timer-logo-wrap {
+    width: clamp(40px, 11vw, 58px);
+    height: clamp(40px, 11vw, 58px);
   }
 
-  /* Config fields full-width */
   .config-fields {
     width: 92vw;
     max-width: 520px;
   }
 
-  /* Show touch +/- buttons */
-  .touch-stepper {
-    display: flex;
-  }
-
-  /* Hide D-pad keyboard hints */
-  .dpad-hint {
-    display: none;
-  }
-
-  /* Show touch-only hints */
-  .touch-hint {
-    display: inline !important;
-  }
+  .touch-stepper { display: flex; }
+  .dpad-hint     { display: none; }
+  .touch-hint    { display: inline !important; }
 }
 
-/* Touch-only hints hidden by default on TV/landscape */
-.touch-hint {
-  display: none;
-}
+/* Touch-only hints hidden by default */
+.touch-hint { display: none; }
 
-/* ═══════════════════════════ TV D-Pad Focus ═══════════════════════════ */
+/* ═══════════════════════════ TV D-Pad Focus — Minimal White ═══════════════════════════ */
 
-/* Global: remove default outline on all interactive elements */
 button:focus,
 input:focus,
 [tabindex]:focus {
   outline: none;
 }
 
-/* Numpad buttons: clear neon green focus for TV remote navigation */
+/* Numpad: white fill on focus */
 .numpad-btn:focus-visible,
 .numpad-btn:focus {
   outline: none !important;
-  border: 4px solid #00ff66 !important;
-  box-shadow: 0 0 16px #00ff66, 0 0 32px rgba(0, 255, 102, 0.45) !important;
-  background: rgba(0, 255, 102, 0.18) !important;
-  color: #00ff66 !important;
-  transform: scale(1.1) !important;
-  transition: all 0.2s ease !important;
+  background: #F8F9FA !important;
+  color: #121212 !important;
+  border-color: #F8F9FA !important;
+  transform: scale(1.06) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4) !important;
+  transition: all 0.15s ease !important;
 }
 
-/* Generic interactive TV focus (buttons outside numpad, inputs) */
-.wod-btn:focus-visible,
-.stepper-btn:focus-visible {
-  outline: 3px solid rgba(255, 255, 255, 0.6);
-  outline-offset: 3px;
-  transition: all 0.2s ease;
+/* Generic wod-btn: white fill on focus */
+.wod-btn:focus-visible {
+  outline: none;
+  background: #F8F9FA !important;
+  color: #121212 !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+  transform: scale(1.03);
+  transition: all 0.15s ease;
 }

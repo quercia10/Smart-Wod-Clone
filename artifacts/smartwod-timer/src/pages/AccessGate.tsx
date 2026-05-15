@@ -48,7 +48,6 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
       setTimeout(() => { setInputState("idle"); setDigits([]); }, 2000);
       return;
     }
-    // wrong
     setInputState("wrong");
     setTimeout(() => { setInputState("idle"); setDigits([]); }, 900);
   }, [onUnlock]);
@@ -69,59 +68,45 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
   }, [addDigit, removeDigit, clearAll, inputState]);
 
   const isSuccess = inputState === "success-trial" || inputState === "success-lifetime";
-  const isWrong = inputState === "wrong" || inputState === "wrong-expired";
-  const filled = digits.length;
+  const isWrong   = inputState === "wrong" || inputState === "wrong-expired";
+  const filled    = digits.length;
 
-  const dotColor = isSuccess ? "#00ff66" : isWrong ? "#ff3333" : "#00ff66";
-  const borderColor = isSuccess ? "#00ff66" : isWrong ? "#ff3333" : "rgba(0,255,102,0.3)";
+  const dotColor    = isSuccess ? "#2ECC71" : isWrong ? "#E74C3C" : "#2ECC71";
+  const borderColor = isSuccess ? "#2ECC71" : isWrong ? "#E74C3C" : "rgba(255,255,255,0.10)";
 
   function getMessage(): { text: string; color: string } | null {
-    if (inputState === "wrong") return { text: "Codice Errato. Riprova.", color: "#ff3333" };
-    if (inputState === "wrong-expired") return { text: "Codice di prova non più valido su questo dispositivo.", color: "#ff8800" };
-    if (inputState === "success-trial") return { text: "Versione di Prova Attivata. Buon allenamento!", color: "#00ff66" };
-    if (inputState === "success-lifetime") return { text: "Attivazione Completata. Accesso Lifetime!", color: "#00ff66" };
+    if (inputState === "wrong")          return { text: "Codice errato. Riprova.",                                          color: "#E74C3C" };
+    if (inputState === "wrong-expired")  return { text: "Codice di prova non più valido su questo dispositivo.",             color: "#E67E22" };
+    if (inputState === "success-trial")  return { text: "Versione di prova attivata. Buon allenamento!",                    color: "#2ECC71" };
+    if (inputState === "success-lifetime") return { text: "Attivazione completata. Accesso Lifetime!",                      color: "#2ECC71" };
     return null;
   }
 
   const msg = getMessage();
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        background: "transparent",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        fontFamily: "Oswald, sans-serif",
-        overflow: "hidden",
-      }}
-    >
-      {/* Logo */}
-      <div style={{ fontSize: "clamp(18px, 2.5vw, 36px)", fontWeight: 700, letterSpacing: "0.3em", color: "#00ff66", textShadow: "0 0 20px #00ff66, 0 0 40px #00ff66", marginBottom: "4vh", textTransform: "uppercase" }}>
+    <div style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+
+      {/* App title */}
+      <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(18px,2.5vw,36px)", fontWeight: 700, letterSpacing: "0.06em", color: "#F8F9FA", marginBottom: "4vh", textTransform: "uppercase" }}>
         SmartWOD Timer
       </div>
 
       {/* Card */}
       <div
         style={{
-          background: "rgba(255,255,255,0.03)",
-          border: `2px solid ${isSuccess ? "#00ff66" : mode === "expired" ? "rgba(255,51,51,0.3)" : "rgba(0,255,102,0.2)"}`,
-          borderRadius: "16px",
+          background: "#1E1E1E",
+          border: `1px solid ${borderColor}`,
+          borderRadius: "20px",
           padding: "clamp(28px, 4vh, 52px) clamp(28px, 5vw, 72px)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "clamp(16px, 2.5vh, 28px)",
-          minWidth: "clamp(300px, 48vw, 660px)",
-          boxShadow: isSuccess
-            ? "0 0 50px rgba(0,255,102,0.25)"
-            : mode === "expired"
-            ? "0 0 40px rgba(255,51,51,0.1)"
-            : "0 0 40px rgba(0,255,102,0.06)",
+          gap: "clamp(16px, 2.5vh, 26px)",
+          minWidth: "clamp(300px, 46vw, 620px)",
+          boxShadow: "0 12px 48px rgba(0,0,0,0.5)",
           animation: isWrong ? "shake 0.5s ease" : "none",
+          transition: "border-color 0.2s ease",
         }}
       >
         {/* Icon */}
@@ -130,19 +115,19 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
         {/* Title */}
         {mode === "expired" && !isSuccess ? (
           <>
-            <div style={{ fontSize: "clamp(18px, 2.2vw, 32px)", fontWeight: 700, color: "#ff3333", letterSpacing: "0.2em", textAlign: "center", textShadow: "0 0 15px #ff3333" }}>
-              VERSIONE DI PROVA SCADUTA
+            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(16px,2vw,28px)", fontWeight: 700, color: "#E74C3C", letterSpacing: "0.04em", textAlign: "center" }}>
+              Versione di prova scaduta
             </div>
-            <div style={{ fontFamily: "Roboto, sans-serif", fontSize: "clamp(11px, 1.2vw, 16px)", color: "rgba(255,255,255,0.45)", textAlign: "center", letterSpacing: "0.05em", lineHeight: 1.5, maxWidth: "380px" }}>
+            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(11px,1.1vw,15px)", fontWeight: 400, color: "rgba(248,249,250,0.42)", textAlign: "center", letterSpacing: "0.02em", lineHeight: 1.55, maxWidth: "360px" }}>
               La tua prova di 7 giorni è terminata.<br />Inserisci il codice Lifetime per continuare.
             </div>
           </>
         ) : (
           <>
-            <div style={{ fontSize: "clamp(16px, 2vw, 28px)", fontWeight: 500, color: "rgba(255,255,255,0.85)", letterSpacing: "0.15em", textAlign: "center", textTransform: "uppercase" }}>
-              Attivazione Richiesta
+            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(15px,1.8vw,26px)", fontWeight: 600, color: "#F8F9FA", letterSpacing: "0.03em", textAlign: "center" }}>
+              Attivazione richiesta
             </div>
-            <div style={{ fontFamily: "Roboto, sans-serif", fontSize: "clamp(11px, 1.1vw, 16px)", color: "rgba(255,255,255,0.38)", textAlign: "center", letterSpacing: "0.04em", lineHeight: 1.5, maxWidth: "380px" }}>
+            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(11px,1vw,15px)", fontWeight: 400, color: "rgba(248,249,250,0.38)", textAlign: "center", letterSpacing: "0.02em", lineHeight: 1.55, maxWidth: "360px" }}>
               Inserisci il codice fornito dal produttore
             </div>
           </>
@@ -151,39 +136,37 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
         {/* Dot row */}
         <div style={{
           display: "flex",
-          gap: "clamp(12px, 1.8vw, 22px)",
+          gap: "clamp(12px, 1.8vw, 20px)",
           alignItems: "center",
           padding: "10px 22px",
-          background: "rgba(0,0,0,0.4)",
-          border: `2px solid ${borderColor}`,
-          borderRadius: "10px",
-          boxShadow: isSuccess ? `0 0 25px ${dotColor}` : isWrong ? `0 0 20px ${dotColor}` : "none",
-          transition: "border-color 0.2s, box-shadow 0.2s",
+          background: "rgba(0,0,0,0.35)",
+          border: `1px solid ${isSuccess || isWrong ? borderColor : "rgba(255,255,255,0.08)"}`,
+          borderRadius: "12px",
+          transition: "border-color 0.2s ease",
         }}>
           {Array.from({ length: CODE_LENGTH }).map((_, i) => (
             <div key={i} style={{
-              width: "clamp(13px, 1.8vw, 20px)",
-              height: "clamp(13px, 1.8vw, 20px)",
+              width: "clamp(13px, 1.7vw, 19px)",
+              height: "clamp(13px, 1.7vw, 19px)",
               borderRadius: "50%",
-              background: i < filled ? dotColor : "rgba(255,255,255,0.12)",
-              boxShadow: i < filled && !isWrong ? `0 0 8px ${dotColor}` : "none",
-              transition: "background 0.12s, box-shadow 0.12s",
+              background: i < filled ? dotColor : "rgba(255,255,255,0.10)",
+              transition: "background 0.12s ease",
             }} />
           ))}
         </div>
 
         {/* Message */}
         <div style={{
-          fontFamily: "Roboto, sans-serif",
-          fontSize: "clamp(11px, 1.1vw, 15px)",
+          fontFamily: "Inter, sans-serif",
+          fontSize: "clamp(11px, 1vw, 14px)",
+          fontWeight: 500,
           color: msg ? msg.color : "transparent",
-          letterSpacing: "0.12em",
-          textShadow: msg ? `0 0 8px ${msg.color}` : "none",
+          letterSpacing: "0.04em",
           textAlign: "center",
           minHeight: "1.4em",
-          transition: "color 0.2s",
+          transition: "color 0.2s ease",
         }}>
-          {msg ? msg.text : " "}
+          {msg ? msg.text : "\u00A0"}
         </div>
 
         {/* Numpad */}
@@ -191,36 +174,24 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
       </div>
 
       {/* Footer */}
-      <div style={{ marginTop: "4vh", fontFamily: "Roboto, sans-serif", fontSize: "clamp(10px, 1vw, 13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.2em", textTransform: "uppercase" }}>
+      <div style={{ marginTop: "4vh", fontFamily: "Inter, sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.15em", textTransform: "uppercase" }}>
         Usa il telecomando o i tasti numerici
       </div>
-
-      <style>{`
-        @keyframes shake {
-          0%,100% { transform: translateX(0); }
-          15% { transform: translateX(-10px); }
-          30% { transform: translateX(10px); }
-          45% { transform: translateX(-8px); }
-          60% { transform: translateX(8px); }
-          75% { transform: translateX(-4px); }
-          90% { transform: translateX(4px); }
-        }
-      `}</style>
     </div>
   );
 }
 
 function LockIcon({ unlocked, expired }: { unlocked: boolean; expired: boolean }) {
-  const color = unlocked ? "#00ff66" : expired ? "#ff3333" : "#00ff66";
+  const color = unlocked ? "#2ECC71" : expired ? "#E74C3C" : "#2ECC71";
   return (
-    <svg width="48" height="48" viewBox="0 0 52 52" fill="none" style={{ filter: `drop-shadow(0 0 8px ${color})` }}>
-      <rect x="10" y="24" width="32" height="22" rx="5" fill={unlocked ? color : "none"} stroke={color} strokeWidth="3" style={{ transition: "fill 0.3s" }} />
+    <svg width="44" height="44" viewBox="0 0 52 52" fill="none">
+      <rect x="10" y="24" width="32" height="22" rx="5" fill={unlocked ? color : "none"} stroke={color} strokeWidth="2.5" style={{ transition: "fill 0.3s" }} />
       {expired ? (
-        <path d="M17 24V16a9 9 0 0 1 18 0" stroke={color} strokeWidth="3" strokeLinecap="round" strokeDasharray="4 3" />
+        <path d="M17 24V16a9 9 0 0 1 18 0" stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeDasharray="4 3" />
       ) : (
-        <path d="M17 24V18a9 9 0 0 1 18 0v6" stroke={color} strokeWidth="3" strokeLinecap="round" />
+        <path d="M17 24V18a9 9 0 0 1 18 0v6" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
       )}
-      <circle cx="26" cy="35" r="3" fill={unlocked ? "#000" : color} style={{ transition: "fill 0.3s" }} />
+      <circle cx="26" cy="35" r="3" fill={unlocked ? "#1E1E1E" : color} style={{ transition: "fill 0.3s" }} />
     </svg>
   );
 }
@@ -264,18 +235,16 @@ function NumPad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void;
     e.preventDefault();
     e.stopPropagation();
     const neighbor = getNeighbor(idx, e.key);
-    if (neighbor !== null && btnRefs.current[neighbor]) {
-      btnRefs.current[neighbor]?.focus();
-    }
+    if (neighbor !== null) btnRefs.current[neighbor]?.focus();
   }
 
-  const btnSize = "clamp(54px, 6.5vw, 90px)";
+  const btnSize = "clamp(54px, 6.5vw, 86px)";
 
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(8px, 1.2vw, 16px)" }}>
+    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(8px, 1.2vw, 14px)" }}>
       {flatKeys.map((key, i) => {
         if (key === "") return <div key={`e${i}`} />;
-        const isDelete = key === "⌫";
+        const isDelete  = key === "⌫";
         const isFocused = flash === key;
         return (
           <button
@@ -289,19 +258,20 @@ function NumPad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void;
             onKeyDown={(e) => handleButtonKeyDown(e, i)}
             style={{
               width: btnSize, height: btnSize,
-              background: isFocused ? "rgba(0,255,102,0.22)" : "rgba(255,255,255,0.05)",
-              border: `2px solid ${isFocused ? "#00ff66" : "rgba(255,255,255,0.1)"}`,
-              borderRadius: "10px",
-              fontFamily: isDelete ? "Roboto, sans-serif" : "Oswald, sans-serif",
-              fontSize: isDelete ? "clamp(16px, 2vw, 28px)" : "clamp(20px, 2.6vw, 38px)",
+              background: isFocused ? "#F8F9FA" : "rgba(255,255,255,0.06)",
+              border: `1px solid ${isFocused ? "transparent" : "rgba(255,255,255,0.10)"}`,
+              borderRadius: "12px",
+              fontFamily: isDelete ? "Inter, sans-serif" : "Oswald, sans-serif",
+              fontSize: isDelete ? "clamp(16px, 2vw, 26px)" : "clamp(20px, 2.5vw,36px)",
               fontWeight: 600,
-              color: isFocused ? "#00ff66" : isDelete ? "rgba(255,255,255,0.5)" : "white",
+              color: isFocused ? "#121212" : isDelete ? "rgba(248,249,250,0.48)" : "#F8F9FA",
               cursor: disabled ? "default" : "pointer",
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: isFocused ? "0 0 18px rgba(0,255,102,0.45)" : "none",
-              transform: isFocused ? "scale(1.08)" : "scale(1)",
-              transition: "all 0.2s ease",
-            }}>{key}</button>
+              transform: isFocused ? "scale(1.06)" : "scale(1)",
+              transition: "all 0.12s ease",
+              outline: "none",
+            }}
+          >{key}</button>
         );
       })}
     </div>
