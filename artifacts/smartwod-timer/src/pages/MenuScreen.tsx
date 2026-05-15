@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { WorkoutMode, WorkoutConfig, MODE_LABELS, MODE_SUBTITLES } from "@/lib/types";
 import { resumeAudio } from "@/lib/sound";
 
@@ -17,6 +17,12 @@ interface MenuScreenProps {
 
 export default function MenuScreen({ onSelect }: MenuScreenProps) {
   const [focused, setFocused] = useState(0);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const moveFocus = useCallback((index: number) => {
+    setFocused(index);
+    btnRefs.current[index]?.focus();
+  }, []);
 
   const handleSelect = useCallback((index: number) => {
     resumeAudio();
@@ -25,13 +31,17 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
   }, [onSelect]);
 
   useEffect(() => {
+    btnRefs.current[focused]?.focus();
+  }, []);
+
+  useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
         e.preventDefault();
-        setFocused((prev) => (prev - 1 + MODES.length) % MODES.length);
+        moveFocus((focused - 1 + MODES.length) % MODES.length);
       } else if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         e.preventDefault();
-        setFocused((prev) => (prev + 1) % MODES.length);
+        moveFocus((focused + 1) % MODES.length);
       } else if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         handleSelect(focused);
@@ -39,7 +49,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
     }
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [focused, handleSelect]);
+  }, [focused, handleSelect, moveFocus]);
 
   return (
     <div
@@ -91,9 +101,11 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
           return (
             <button
               key={mode}
+              ref={(el) => { btnRefs.current[i] = el; }}
               data-testid={`mode-btn-${mode}`}
+              tabIndex={0}
               onClick={() => handleSelect(i)}
-              onFocus={() => setFocused(i)}
+              onFocus={() => { setFocused(i); }}
               className="wod-btn"
               style={{
                 background: isFocused ? `rgba(${hexToRgb(color)}, 0.12)` : "rgba(255,255,255,0.03)",
@@ -110,7 +122,6 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
                 boxShadow: isFocused
                   ? `0 0 30px ${color}66, 0 0 60px ${color}33, inset 0 0 20px ${color}1a`
                   : "none",
-                outline: "none",
               }}
             >
               {/* Mode icon */}
