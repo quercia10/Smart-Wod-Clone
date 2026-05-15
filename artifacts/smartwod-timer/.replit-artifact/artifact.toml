@@ -18,9 +18,16 @@ localPort = 22961
 run = "pnpm --filter @workspace/smartwod-timer run dev"
 
 [services.production]
-build = [ "pnpm", "--filter", "@workspace/smartwod-timer", "run", "build" ]
 publicDir = "artifacts/smartwod-timer/dist/public"
 serve = "static"
+
+[services.production.build]
+args = ["pnpm", "--filter", "@workspace/smartwod-timer", "run", "build"]
+
+[services.production.build.env]
+PORT = "22961"
+BASE_PATH = "/"
+NODE_ENV = "production"
 
 [[services.production.rewrites]]
 from = "/*"
