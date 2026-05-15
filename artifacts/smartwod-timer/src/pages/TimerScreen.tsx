@@ -259,14 +259,14 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
           {mode.replace("_", " ")}
           {mode === "TABATA" && state.phase !== "countdown" && state.phase !== "done" && (
             <span style={{ fontSize: "60%", fontWeight: 300, marginLeft: "16px", color: "rgba(255,255,255,0.45)", letterSpacing: "0.1em" }}>
-              {state.phase === "running" ? "LAVORO" : state.phase === "rest" ? "RECUPERO" : "PAUSA ROUND"}
+              {state.phase === "running" ? "LAVORO" : state.phase === "rest" ? "RECUPERO" : "PAUSA SERIE"}
             </span>
           )}
         </div>
 
         {(mode === "EMOM" || mode === "TABATA") && state.phase !== "countdown" && state.phase !== "done" && (
           <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(15px,1.9vw,26px)", color: "rgba(255,255,255,0.5)", letterSpacing: "0.1em" }}>
-            ROUND <span style={{ color: "white", fontWeight: 700 }}>{state.currentRound}</span> / {state.totalRounds}
+            SERIE <span style={{ color: "white", fontWeight: 700 }}>{state.currentRound}</span> / {state.totalRounds}
           </div>
         )}
 
@@ -338,7 +338,7 @@ function RoundPauseDisplay({ timeLeft, totalTime, currentRound, totalRounds, phr
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3vh", maxWidth: "92vw" }}>
       <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(16px,2.2vw,32px)", fontWeight: 500, color: PAUSE_COLOR, textShadow: `0 0 15px ${PAUSE_COLOR}`, letterSpacing: "0.2em" }}>
-        PAUSA ROUND — ROUND {currentRound} / {totalRounds}
+        PAUSA SERIE — SERIE {currentRound} / {totalRounds}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "clamp(28px,5vw,70px)", flexWrap: "wrap", justifyContent: "center" }}>
         <ProgressCircle progress={progress} size={circleSize} strokeWidth={11} color={PAUSE_COLOR}>
@@ -472,7 +472,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProp
       {/* Sets per round dots */}
       <div>
         <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.15em", marginBottom: "8px" }}>
-          SERIE {state.currentSet} / {setsPerRound}
+          ESERCIZIO {state.currentSet} / {setsPerRound}
         </div>
         <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
           {Array.from({ length: setsPerRound }).map((_, i) => {
@@ -488,7 +488,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProp
       {/* Round dots */}
       <div>
         <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.15em", marginBottom: "8px" }}>
-          ROUND {state.currentRound} / {totalRounds}
+          SERIE {state.currentRound} / {totalRounds}
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", justifyContent: "center", maxWidth: "220px" }}>
           {Array.from({ length: totalRounds }).map((_, i) => {
