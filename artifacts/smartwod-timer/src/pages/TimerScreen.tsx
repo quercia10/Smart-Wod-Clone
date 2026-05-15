@@ -241,12 +241,24 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     return () => window.removeEventListener("keydown", onKey);
   }, [state.phase, mode, onBack, addRound, finishForTime, togglePause]);
 
-  /* ── render ── */
-  const circleSize = Math.min(
-    typeof window !== "undefined" ? window.innerHeight * 0.58 : 380,
-    typeof window !== "undefined" ? window.innerWidth  * 0.38 : 380,
-    400,
-  );
+  /* ── responsive circle size ── */
+  const computeCircleSize = useCallback(() => {
+    const portrait = window.innerHeight > window.innerWidth;
+    if (portrait) return Math.min(window.innerWidth * 0.72, window.innerHeight * 0.38, 320);
+    return Math.min(window.innerHeight * 0.58, window.innerWidth * 0.38, 400);
+  }, []);
+
+  const [circleSize, setCircleSize] = useState(computeCircleSize);
+
+  useEffect(() => {
+    const handle = () => setCircleSize(computeCircleSize());
+    window.addEventListener("resize", handle);
+    window.addEventListener("orientationchange", handle);
+    return () => {
+      window.removeEventListener("resize", handle);
+      window.removeEventListener("orientationchange", handle);
+    };
+  }, [computeCircleSize]);
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease" }}>
@@ -278,7 +290,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
       </div>
 
       {/* Main */}
-      <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "clamp(28px,5vw,80px)", padding: "2vh 4vw", position: "relative", zIndex: 2 }}>
+      <div className="timer-main" style={{ flex: 1, position: "relative", zIndex: 2 }}>
         {state.phase === "countdown" && <CountdownDisplay countdownNum={state.countdownNum} />}
 
         {state.phase === "done" && (
@@ -296,7 +308,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         {(state.phase === "running" || state.phase === "rest") && (
           <>
             <ProgressCircle progress={progress} size={circleSize} strokeWidth={13} color={color}>
-              <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,8vw,115px)", fontWeight: 700, color, textShadow: `0 0 20px ${color},0 0 40px ${color}66`, letterSpacing: "0.02em", lineHeight: 1 }} data-testid="timer-display">
+              <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,15vmin,130px)", fontWeight: 700, color, textShadow: `0 0 20px ${color},0 0 40px ${color}66`, letterSpacing: "0.02em", lineHeight: 1 }} data-testid="timer-display">
                 {mode === "FOR_TIME" ? formatTime(state.elapsedForTime) : formatTime(state.timeLeft)}
               </div>
               <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(11px,1.2vw,16px)", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "8px" }}>
@@ -321,7 +333,7 @@ function CountdownDisplay({ countdownNum }: { countdownNum: number }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2vh" }}>
       <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(22px,3vw,48px)", color: "rgba(255,255,255,0.5)", letterSpacing: "0.4em" }}>PREPARATI</div>
-      <div key={countdownNum} style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(140px,26vw,360px)", fontWeight: 700, color: "#ff8800", textShadow: "0 0 40px #ff8800,0 0 80px #ff880066", lineHeight: 1, animation: "countdown-num 1s ease-in-out" }}>
+      <div key={countdownNum} style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(90px,28vmin,360px)", fontWeight: 700, color: "#ff8800", textShadow: "0 0 40px #ff8800,0 0 80px #ff880066", lineHeight: 1, animation: "countdown-num 1s ease-in-out" }}>
         {countdownNum}
       </div>
       <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(13px,1.5vw,20px)", color: "rgba(255,255,255,0.25)", letterSpacing: "0.25em" }}>
@@ -342,13 +354,13 @@ function RoundPauseDisplay({ timeLeft, totalTime, currentRound, totalRounds, phr
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "clamp(28px,5vw,70px)", flexWrap: "wrap", justifyContent: "center" }}>
         <ProgressCircle progress={progress} size={circleSize} strokeWidth={11} color={PAUSE_COLOR}>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(40px,7vw,100px)", fontWeight: 700, color: PAUSE_COLOR, textShadow: `0 0 20px ${PAUSE_COLOR}`, lineHeight: 1 }}>
+          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,12vmin,100px)", fontWeight: 700, color: PAUSE_COLOR, textShadow: `0 0 20px ${PAUSE_COLOR}`, lineHeight: 1 }}>
             {formatTime(timeLeft)}
           </div>
           <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,14px)", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "6px" }}>RIPARTENZA</div>
         </ProgressCircle>
 
-        <div style={{ maxWidth: "clamp(240px,36vw,540px)", background: "rgba(68,136,204,0.07)", border: "1px solid rgba(68,136,204,0.3)", borderRadius: "12px", padding: "clamp(18px,3vh,32px) clamp(18px,3vw,36px)", display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div style={{ maxWidth: "min(540px, 82vw)", background: "rgba(68,136,204,0.07)", border: "1px solid rgba(68,136,204,0.3)", borderRadius: "12px", padding: "clamp(18px,3vh,32px) clamp(18px,3vw,36px)", display: "flex", flexDirection: "column", gap: "14px" }}>
           <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.25)", letterSpacing: "0.3em", textTransform: "uppercase" }}>
             💬 frase del round
           </div>
@@ -366,7 +378,7 @@ function DoneDisplay({ mode, elapsed, roundCount, phrase }: {
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2.5vh", maxWidth: "88vw", textAlign: "center" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(48px,8vw,110px)", fontWeight: 700, color: DONE_COLOR, textShadow: `0 0 30px ${DONE_COLOR},0 0 60px ${DONE_COLOR}66`, letterSpacing: "0.3em", animation: "scale-in 0.4s ease-out" }}>
+      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(42px,14vmin,110px)", fontWeight: 700, color: DONE_COLOR, textShadow: `0 0 30px ${DONE_COLOR},0 0 60px ${DONE_COLOR}66`, letterSpacing: "0.3em", animation: "scale-in 0.4s ease-out" }}>
         TEMPO!
       </div>
       <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(16px,2.2vw,32px)", fontWeight: 300, color: "rgba(255,255,255,0.35)", letterSpacing: "0.2em" }}>
@@ -416,7 +428,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProp
         <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,12vw,160px)", fontWeight: 700, color: WORK_COLOR, textShadow: `0 0 30px ${WORK_COLOR}`, lineHeight: 1 }} data-testid="round-count">
           {state.roundCount}
         </div>
-        <button data-testid="btn-add-round" onClick={onAddRound}
+        <button data-testid="btn-add-round" className="wod-btn" onClick={onAddRound}
           style={{ background: "transparent", border: `3px solid ${WORK_COLOR}`, borderRadius: "10px", padding: "12px 32px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: WORK_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${WORK_COLOR}44`, outline: "none" }}>
           + GIRO
         </button>
@@ -434,7 +446,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProp
         <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,5vw,70px)", fontWeight: 700, color: "rgba(255,255,255,0.55)", lineHeight: 1 }}>
           {formatTime(state.timeLeft)}
         </div>
-        <button data-testid="btn-done" onClick={onFinishForTime}
+        <button data-testid="btn-done" className="wod-btn" onClick={onFinishForTime}
           style={{ background: "transparent", border: `3px solid ${REST_COLOR}`, borderRadius: "10px", padding: "14px 36px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: REST_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${REST_COLOR}44`, outline: "none" }}>
           FINE
         </button>

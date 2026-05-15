@@ -229,3 +229,130 @@
 .animate-flash-red {
   animation: flash-red 0.5s ease-in-out 3;
 }
+
+/* ═══════════════════════════ Responsive Layout ═══════════════════════════ */
+
+/* Menu grid: 4 cols on landscape TV */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 2vw, 32px);
+  width: 90vw;
+  max-width: 1400px;
+}
+
+/* Timer main content: row on landscape */
+.timer-main {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 5vw, 80px);
+  padding: 2vh 4vw;
+}
+
+/* Config fields container */
+.config-fields {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vh, 24px);
+  width: clamp(300px, 60vw, 800px);
+}
+
+/* Touch stepper buttons: hidden on landscape/TV */
+.touch-stepper {
+  display: none;
+  align-items: center;
+}
+
+/* D-pad keyboard hints: visible on TV/landscape */
+.dpad-hint {
+  display: inline;
+}
+
+/* All interactive elements: minimum 44×44 touch target */
+.wod-btn {
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tap feedback mirrors D-pad focus neon glow */
+.wod-btn:active {
+  filter: brightness(1.3);
+}
+
+/* Touch +/- stepper base style */
+.stepper-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Oswald', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s ease, border-color 0.12s ease;
+  outline: none;
+  user-select: none;
+  line-height: 1;
+}
+
+.stepper-btn:active,
+.stepper-btn:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ═══════════════════════════ Portrait / Mobile ═══════════════════════════ */
+@media (orientation: portrait), (max-width: 680px) {
+  /* 2-col menu grid */
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(10px, 3vw, 20px);
+    width: 94vw;
+  }
+
+  /* Timer: circle top, panel below */
+  .timer-main {
+    flex-direction: column;
+    gap: 2vh;
+    padding: 0.5vh 5vw 2vh;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Config fields full-width */
+  .config-fields {
+    width: 92vw;
+    max-width: 520px;
+  }
+
+  /* Show touch +/- buttons */
+  .touch-stepper {
+    display: flex;
+  }
+
+  /* Hide D-pad keyboard hints */
+  .dpad-hint {
+    display: none;
+  }
+
+  /* Show touch-only hints */
+  .touch-hint {
+    display: inline !important;
+  }
+}
+
+/* Touch-only hints hidden by default on TV/landscape */
+.touch-hint {
+  display: none;
+}

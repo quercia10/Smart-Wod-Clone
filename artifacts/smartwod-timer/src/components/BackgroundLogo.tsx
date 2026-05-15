@@ -18,8 +18,11 @@ export default function BackgroundLogo() {
         src={logoUrl}
         alt=""
         style={{
-          width: "clamp(220px, 38vw, 560px)",
+          width: "clamp(180px, 42vmin, 520px)",
           height: "auto",
+          maxWidth: "85vw",
+          maxHeight: "85vh",
+          objectFit: "contain",
           opacity: 0.12,
           filter: "brightness(3) saturate(0)",
           mixBlendMode: "screen",

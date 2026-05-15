@@ -151,20 +151,14 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
       </div>
 
       {/* Fields */}
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "clamp(12px, 2vh, 24px)",
-          width: "clamp(320px, 60vw, 800px)",
-        }}
-      >
+      <div className="config-fields">
         {fields.map((field, i) => {
           const isFocused = focusedField === i;
           return (
             <div
               key={field.key}
               data-testid={`config-field-${field.key}`}
+              onClick={() => setFocusedField(i)}
               style={{
                 background: isFocused ? `rgba(${hexToRgb(color)}, 0.1)` : "rgba(255,255,255,0.03)",
                 border: `2px solid ${isFocused ? color : "rgba(255,255,255,0.1)"}`,
@@ -189,11 +183,16 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
               >
                 {field.label}
               </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "clamp(16px, 2vw, 32px)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "clamp(8px, 1.2vw, 20px)" }}>
                 {isFocused && (
-                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "clamp(16px, 2vw, 28px)" }}>←</span>
+                  <span className="dpad-hint" style={{ color: "rgba(255,255,255,0.3)", fontSize: "clamp(16px, 2vw, 28px)" }}>←</span>
                 )}
-                <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                <button
+                  className="touch-stepper stepper-btn wod-btn"
+                  style={{ borderColor: isFocused ? `${color}66` : undefined }}
+                  onClick={(e) => { e.stopPropagation(); setFocusedField(i); changeValue(i, -1); }}
+                >−</button>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "8px", minWidth: "6ch", justifyContent: "center" }}>
                   <span
                     style={{
                       fontFamily: "Oswald, sans-serif",
@@ -221,8 +220,13 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
                   </span>
                 </div>
                 {isFocused && (
-                  <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "clamp(16px, 2vw, 28px)" }}>→</span>
+                  <span className="dpad-hint" style={{ color: "rgba(255,255,255,0.3)", fontSize: "clamp(16px, 2vw, 28px)" }}>→</span>
                 )}
+                <button
+                  className="touch-stepper stepper-btn wod-btn"
+                  style={{ borderColor: isFocused ? `${color}66` : undefined }}
+                  onClick={(e) => { e.stopPropagation(); setFocusedField(i); changeValue(i, 1); }}
+                >+</button>
               </div>
             </div>
           );
@@ -231,6 +235,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
         {/* START button */}
         <button
           data-testid="btn-start"
+          className="wod-btn"
           onClick={() => { resumeAudio(); onStart(buildConfig()); }}
           onFocus={() => setFocusedField(fields.length)}
           style={{
@@ -268,7 +273,8 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
           textTransform: "uppercase",
         }}
       >
-        ESC ← Indietro &nbsp;|&nbsp; ↑ ↓ Naviga &nbsp;|&nbsp; ← → Modifica
+        <span className="dpad-hint">ESC ← Indietro &nbsp;|&nbsp; ↑ ↓ Naviga &nbsp;|&nbsp; ← → Modifica</span>
+        <span className="touch-hint">Tocca + − per modificare &nbsp;|&nbsp; INIZIA per partire</span>
       </div>
     </div>
   );

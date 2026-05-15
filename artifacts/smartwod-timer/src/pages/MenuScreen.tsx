@@ -84,15 +84,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
       </div>
 
       {/* Mode grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "clamp(12px, 2vw, 32px)",
-          width: "90vw",
-          maxWidth: "1400px",
-        }}
-      >
+      <div className="menu-grid">
         {MODES.map((mode, i) => {
           const isFocused = focused === i;
           const color = MODE_COLORS_BG[mode];
@@ -102,6 +94,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
               data-testid={`mode-btn-${mode}`}
               onClick={() => handleSelect(i)}
               onFocus={() => setFocused(i)}
+              className="wod-btn"
               style={{
                 background: isFocused ? `rgba(${hexToRgb(color)}, 0.12)` : "rgba(255,255,255,0.03)",
                 border: `3px solid ${isFocused ? color : "rgba(255,255,255,0.12)"}`,
@@ -164,7 +157,8 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
           textTransform: "uppercase",
         }}
       >
-        ← → Naviga &nbsp;|&nbsp; INVIO Seleziona
+        <span className="dpad-hint">← → D-Pad &nbsp;|&nbsp; INVIO Seleziona &nbsp;|&nbsp; ESC Esci</span>
+        <span className="touch-hint">Tocca una modalità per iniziare</span>
       </div>
     </div>
   );
