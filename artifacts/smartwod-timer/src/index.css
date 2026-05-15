@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Roboto:wght@300;400;700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card-border: hsl(var(--card-border));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover-border: hsl(var(--popover-border));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-border: var(--primary-border);
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary-border: var(--secondary-border);
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted-border: var(--muted-border);
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-border: var(--accent-border);
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive-border: var(--destructive-border);
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-primary-border: var(--sidebar-primary-border);
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-accent-border: var(--sidebar-accent-border);
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --font-sans: var(--app-font-sans);
+  --font-serif: var(--app-font-serif);
+  --font-mono: var(--app-font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --button-outline: rgba(0,0,0, .10);
+  --badge-outline: rgba(0,0,0, .05);
+  --opaque-button-border-intensity: -8;
+  --elevate-1: rgba(0,0,0, .03);
+  --elevate-2: rgba(0,0,0, .08);
+
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --border: 0 0% 20%;
+  --card: 0 0% 6%;
+  --card-foreground: 0 0% 100%;
+  --card-border: 0 0% 15%;
+  --sidebar: 0 0% 4%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-border: 0 0% 15%;
+  --sidebar-primary: 142 100% 50%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 0 0% 10%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-ring: 142 100% 50%;
+  --popover: 0 0% 6%;
+  --popover-foreground: 0 0% 100%;
+  --popover-border: 0 0% 20%;
+  --primary: 142 100% 50%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 60%;
+  --accent: 0 0% 12%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 90% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --input: 0 0% 20%;
+  --ring: 142 100% 50%;
+  --chart-1: 142 100% 50%;
+  --chart-2: 0 90% 55%;
+  --chart-3: 30 100% 55%;
+  --chart-4: 210 100% 60%;
+  --chart-5: 270 100% 60%;
+
+  --app-font-sans: 'Oswald', 'Roboto', sans-serif;
+  --app-font-serif: Georgia, serif;
+  --app-font-mono: Menlo, monospace;
+  --radius: .375rem;
+
+  --neon-green: #00ff66;
+  --neon-red: #ff3333;
+  --neon-orange: #ff8800;
+
+  --primary-border: hsl(var(--primary));
+  --primary-border: hsl(from hsl(var(--primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --secondary-border: hsl(var(--secondary));
+  --secondary-border: hsl(from hsl(var(--secondary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --muted-border: hsl(var(--muted));
+  --muted-border: hsl(from hsl(var(--muted)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --accent-border: hsl(var(--accent));
+  --accent-border: hsl(from hsl(var(--accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --destructive-border: hsl(var(--destructive));
+  --destructive-border: hsl(from hsl(var(--destructive)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-primary-border: hsl(var(--sidebar-primary));
+  --sidebar-primary-border: hsl(from hsl(var(--sidebar-primary)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+  --sidebar-accent-border: hsl(var(--sidebar-accent));
+  --sidebar-accent-border: hsl(from hsl(var(--sidebar-accent)) h s calc(l + var(--opaque-button-border-intensity)) / alpha);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+  html, body, #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Oswald', 'Roboto', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  .neon-green {
+    color: var(--neon-green);
+  }
+  .neon-red {
+    color: var(--neon-red);
+  }
+  .neon-orange {
+    color: var(--neon-orange);
+  }
+  .neon-glow-green {
+    text-shadow: 0 0 20px var(--neon-green), 0 0 40px var(--neon-green), 0 0 80px var(--neon-green);
+  }
+  .neon-glow-red {
+    text-shadow: 0 0 20px var(--neon-red), 0 0 40px var(--neon-red), 0 0 80px var(--neon-red);
+  }
+  .neon-glow-orange {
+    text-shadow: 0 0 20px var(--neon-orange), 0 0 40px var(--neon-orange), 0 0 80px var(--neon-orange);
+  }
+  .neon-border-green {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 15px var(--neon-green), inset 0 0 15px rgba(0,255,102,0.1);
+  }
+  .neon-border-red {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px var(--neon-red), inset 0 0 15px rgba(255,51,51,0.1);
+  }
+  .neon-border-orange {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 15px var(--neon-orange), inset 0 0 15px rgba(255,136,0,0.1);
+  }
+  .focus-neon:focus {
+    outline: none;
+    border-color: var(--neon-green) !important;
+    box-shadow: 0 0 20px var(--neon-green), 0 0 40px rgba(0,255,102,0.3) !important;
+  }
+  .menu-item-focused {
+    border-color: var(--neon-green);
+    box-shadow: 0 0 25px var(--neon-green), 0 0 50px rgba(0,255,102,0.3), inset 0 0 20px rgba(0,255,102,0.1);
+    transform: scale(1.04);
+  }
+  .menu-item-focused-orange {
+    border-color: var(--neon-orange);
+    box-shadow: 0 0 25px var(--neon-orange), 0 0 50px rgba(255,136,0,0.3), inset 0 0 20px rgba(255,136,0,0.1);
+    transform: scale(1.04);
+  }
+  .tv-font {
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 0.05em;
+  }
+  .timer-digits {
+    font-family: 'Oswald', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+@keyframes scale-in {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes countdown-num {
+  0% { transform: scale(1.5); opacity: 0; }
+  20% { transform: scale(1); opacity: 1; }
+  80% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.5); opacity: 0; }
+}
+@keyframes flash-red {
+  0%, 100% { background-color: transparent; }
+  50% { background-color: rgba(255,51,51,0.15); }
+}
+
+.animate-pulse-neon {
+  animation: pulse-neon 1s ease-in-out infinite;
+}
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out;
+}
+.animate-countdown-num {
+  animation: countdown-num 1s ease-in-out;
+}
+.animate-flash-red {
+  animation: flash-red 0.5s ease-in-out 3;
+}
