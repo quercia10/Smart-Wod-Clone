@@ -154,6 +154,9 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   const intervalRef  = useRef<ReturnType<typeof setInterval> | null>(null);
   const lastBeepRef  = useRef<number>(-1);
   const prevPhaseRef = useRef<Phase | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pauseBtnRef  = useRef<HTMLButtonElement>(null);
+  const actionBtnRef = useRef<HTMLButtonElement>(null);
 
   const color    = phaseColor(state.phase, mode);
   const bg       = phaseBg(state.phase);
@@ -221,6 +224,25 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     else if (state.phase === "done") playEndBuzzer();
   }, [state.phase]);
 
+  /* ── auto-focus: ensure TV D-Pad events are captured ── */
+  useEffect(() => {
+    containerRef.current?.focus();
+  }, []);
+
+  /* ── focus action/pause button on phase entry ── */
+  useEffect(() => {
+    if (state.phase === "running") {
+      if (mode === "AMRAP" || mode === "FOR_TIME") {
+        setTimeout(() => actionBtnRef.current?.focus(), 50);
+      } else {
+        setTimeout(() => pauseBtnRef.current?.focus(), 50);
+      }
+    }
+    if (state.phase === "rest" || state.phase === "round-pause") {
+      setTimeout(() => pauseBtnRef.current?.focus(), 50);
+    }
+  }, [state.phase, mode]);
+
   /* ── keyboard ── */
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -235,7 +257,12 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         if (state.phase === "running" && mode === "FOR_TIME") { finishForTime(); return; }
         togglePause();
       }
-      if (e.key === "ArrowUp" && mode === "AMRAP" && state.phase === "running") addRound();
+      if (e.key === "ArrowUp" && mode === "AMRAP" && state.phase === "running") {
+        e.preventDefault(); addRound();
+      }
+      if (e.key === "ArrowDown" && mode === "FOR_TIME" && state.phase === "running") {
+        e.preventDefault(); finishForTime();
+      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -261,7 +288,11 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   }, [computeCircleSize]);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease" }}>
+    <div
+      ref={containerRef}
+      tabIndex={-1}
+      style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease", outline: "none" }}
+    >
       {/* Phase tint */}
       <div style={{ position: "absolute", inset: 0, background: bg, transition: "background 0.5s ease", pointerEvents: "none", zIndex: 1 }} />
 
@@ -282,10 +313,30 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
           </div>
         )}
 
-        {state.paused && (
-          <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(14px,1.6vw,22px)", color: "#ff8800", textShadow: "0 0 10px #ff8800", letterSpacing: "0.2em", animation: "pulse-neon 1s ease-in-out infinite" }}>
-            ⏸ PAUSA
-          </div>
+        {/* Pause / Resume button — always visible during active phases */}
+        {state.phase !== "countdown" && state.phase !== "done" && (
+          <button
+            ref={pauseBtnRef}
+            tabIndex={0}
+            className="wod-btn"
+            onClick={togglePause}
+            style={{
+              background: state.paused ? "rgba(255,136,0,0.18)" : "rgba(255,255,255,0.05)",
+              border: `2px solid ${state.paused ? "#ff8800" : "rgba(255,255,255,0.18)"}`,
+              borderRadius: "8px",
+              padding: "clamp(6px,1vh,12px) clamp(14px,2vw,28px)",
+              fontFamily: "Oswald, sans-serif",
+              fontSize: "clamp(13px,1.5vw,20px)",
+              color: state.paused ? "#ff8800" : "rgba(255,255,255,0.7)",
+              cursor: "pointer",
+              letterSpacing: "0.15em",
+              boxShadow: state.paused ? "0 0 14px rgba(255,136,0,0.5)" : "none",
+              transition: "all 0.2s ease",
+              animation: state.paused ? "pulse-neon 1s ease-in-out infinite" : "none",
+            }}
+          >
+            {state.paused ? "▶ RIPRENDI" : "⏸ PAUSA"}
+          </button>
         )}
       </div>
 
@@ -319,6 +370,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
             <RightPanel
               config={config} state={state} mode={mode}
               onAddRound={addRound} onFinishForTime={finishForTime}
+              actionBtnRef={actionBtnRef}
             />
           </>
         )}
@@ -415,9 +467,10 @@ interface RightPanelProps {
   mode: WorkoutMode;
   onAddRound: () => void;
   onFinishForTime: () => void;
+  actionBtnRef?: React.RefObject<HTMLButtonElement | null>;
 }
 
-function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProps) {
+function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: RightPanelProps) {
   const setsPerRound  = state.setsPerRound;
   const totalRounds   = state.totalRounds;
 
@@ -428,12 +481,17 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProp
         <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,12vw,160px)", fontWeight: 700, color: WORK_COLOR, textShadow: `0 0 30px ${WORK_COLOR}`, lineHeight: 1 }} data-testid="round-count">
           {state.roundCount}
         </div>
-        <button data-testid="btn-add-round" className="wod-btn" onClick={onAddRound}
-          style={{ background: "transparent", border: `3px solid ${WORK_COLOR}`, borderRadius: "10px", padding: "12px 32px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: WORK_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${WORK_COLOR}44`, outline: "none" }}>
+        <button
+          ref={actionBtnRef}
+          data-testid="btn-add-round"
+          tabIndex={0}
+          className="wod-btn"
+          onClick={onAddRound}
+          style={{ background: "transparent", border: `3px solid ${WORK_COLOR}`, borderRadius: "10px", padding: "12px 32px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: WORK_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${WORK_COLOR}44`, transition: "all 0.2s ease" }}>
           + GIRO
         </button>
         <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.15em", marginTop: "8px" }}>
-          INVIO / ↑ = +Giro • ESC = Menu
+          <span className="dpad-hint">INVIO / ↑ = +Giro &nbsp;|&nbsp; ⏸ PAUSA in alto • ESC = Menu</span>
         </div>
       </div>
     );
@@ -446,12 +504,17 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime }: RightPanelProp
         <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,5vw,70px)", fontWeight: 700, color: "rgba(255,255,255,0.55)", lineHeight: 1 }}>
           {formatTime(state.timeLeft)}
         </div>
-        <button data-testid="btn-done" className="wod-btn" onClick={onFinishForTime}
-          style={{ background: "transparent", border: `3px solid ${REST_COLOR}`, borderRadius: "10px", padding: "14px 36px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: REST_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${REST_COLOR}44`, outline: "none" }}>
+        <button
+          ref={actionBtnRef}
+          data-testid="btn-done"
+          tabIndex={0}
+          className="wod-btn"
+          onClick={onFinishForTime}
+          style={{ background: "transparent", border: `3px solid ${REST_COLOR}`, borderRadius: "10px", padding: "14px 36px", fontFamily: "Oswald,sans-serif", fontSize: "clamp(14px,1.8vw,24px)", color: REST_COLOR, cursor: "pointer", letterSpacing: "0.15em", boxShadow: `0 0 15px ${REST_COLOR}44`, transition: "all 0.2s ease" }}>
           FINE
         </button>
         <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1vw,13px)", color: "rgba(255,255,255,0.18)", letterSpacing: "0.15em", marginTop: "8px" }}>
-          INVIO = Fine • ESC = Menu
+          <span className="dpad-hint">INVIO / ↓ = Fine &nbsp;|&nbsp; ⏸ PAUSA in alto • ESC = Menu</span>
         </div>
       </div>
     );
