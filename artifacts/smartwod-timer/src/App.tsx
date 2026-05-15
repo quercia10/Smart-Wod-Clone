@@ -3,16 +3,21 @@ import MenuScreen from "@/pages/MenuScreen";
 import ConfigScreen from "@/pages/ConfigScreen";
 import TimerScreen from "@/pages/TimerScreen";
 import AccessGate from "@/pages/AccessGate";
+import TrialBanner from "@/pages/TrialBanner";
+import { checkLicense, markTrialUsed } from "@/lib/license";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 
-type Screen = "gate" | "menu" | "config" | "timer";
+type Screen = "gate" | "gate-expired" | "trial-banner" | "menu" | "config" | "timer";
 
 function getInitialScreen(): Screen {
-  try {
-    return localStorage.getItem("smartwod_activated") === "true" ? "menu" : "gate";
-  } catch {
-    return "gate";
+  const status = checkLicense();
+  if (status === "lifetime") return "menu";
+  if (status === "trial-active") return "trial-banner";
+  if (status === "trial-expired") {
+    markTrialUsed();
+    return "gate-expired";
   }
+  return "gate";
 }
 
 export default function App() {
@@ -20,7 +25,15 @@ export default function App() {
   const [selectedMode, setSelectedMode] = useState<WorkoutMode | null>(null);
   const [activeConfig, setActiveConfig] = useState<WorkoutConfig | null>(null);
 
-  function handleUnlock() {
+  function handleUnlock(type: "trial" | "lifetime") {
+    if (type === "trial") {
+      setScreen("trial-banner");
+    } else {
+      setScreen("menu");
+    }
+  }
+
+  function handleTrialBannerDone() {
     setScreen("menu");
   }
 
@@ -46,7 +59,15 @@ export default function App() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#000", overflow: "hidden" }}>
-      {screen === "gate" && <AccessGate onUnlock={handleUnlock} />}
+      {screen === "gate" && (
+        <AccessGate mode="normal" onUnlock={handleUnlock} />
+      )}
+      {screen === "gate-expired" && (
+        <AccessGate mode="expired" onUnlock={handleUnlock} />
+      )}
+      {screen === "trial-banner" && (
+        <TrialBanner onDone={handleTrialBannerDone} />
+      )}
       {screen === "menu" && <MenuScreen onSelect={handleModeSelect} />}
       {screen === "config" && selectedMode && (
         <ConfigScreen
