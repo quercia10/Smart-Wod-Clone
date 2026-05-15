@@ -2,14 +2,27 @@ import { useState } from "react";
 import MenuScreen from "@/pages/MenuScreen";
 import ConfigScreen from "@/pages/ConfigScreen";
 import TimerScreen from "@/pages/TimerScreen";
+import AccessGate from "@/pages/AccessGate";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 
-type Screen = "menu" | "config" | "timer";
+type Screen = "gate" | "menu" | "config" | "timer";
+
+function getInitialScreen(): Screen {
+  try {
+    return localStorage.getItem("smartwod_activated") === "true" ? "menu" : "gate";
+  } catch {
+    return "gate";
+  }
+}
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>("menu");
+  const [screen, setScreen] = useState<Screen>(getInitialScreen);
   const [selectedMode, setSelectedMode] = useState<WorkoutMode | null>(null);
   const [activeConfig, setActiveConfig] = useState<WorkoutConfig | null>(null);
+
+  function handleUnlock() {
+    setScreen("menu");
+  }
 
   function handleModeSelect(config: WorkoutConfig) {
     setSelectedMode(config.mode);
@@ -33,6 +46,7 @@ export default function App() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#000", overflow: "hidden" }}>
+      {screen === "gate" && <AccessGate onUnlock={handleUnlock} />}
       {screen === "menu" && <MenuScreen onSelect={handleModeSelect} />}
       {screen === "config" && selectedMode && (
         <ConfigScreen
