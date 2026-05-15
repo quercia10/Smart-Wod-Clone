@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { tryActivate, ActivateResult } from "@/lib/license";
 
 const CODE_LENGTH = 6;
@@ -227,6 +227,12 @@ function LockIcon({ unlocked, expired }: { unlocked: boolean; expired: boolean }
 
 function NumPad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void; onDelete: () => void; disabled: boolean; activeDigit: string | null }) {
   const [flash, setFlash] = useState<string | null>(null);
+  const btnRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const layout = [["1","2","3"],["4","5","6"],["7","8","9"],["","0","⌫"]];
+  const flatKeys = layout.flat();
+  const COLS = 3;
+  const ROWS = 4;
 
   useEffect(() => {
     if (disabled) return;
@@ -238,18 +244,49 @@ function NumPad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void;
     return () => window.removeEventListener("keydown", handleKey);
   }, [disabled]);
 
-  const layout = [["1","2","3"],["4","5","6"],["7","8","9"],["","0","⌫"]];
+  function getNeighbor(currentIdx: number, direction: string): number | null {
+    const row = Math.floor(currentIdx / COLS);
+    const col = currentIdx % COLS;
+    let newRow = row, newCol = col;
+    if (direction === "ArrowUp") newRow--;
+    else if (direction === "ArrowDown") newRow++;
+    else if (direction === "ArrowLeft") newCol--;
+    else if (direction === "ArrowRight") newCol++;
+    if (newRow < 0 || newRow >= ROWS || newCol < 0 || newCol >= COLS) return null;
+    const newIdx = newRow * COLS + newCol;
+    if (flatKeys[newIdx] === "") return null;
+    return newIdx;
+  }
+
+  function handleButtonKeyDown(e: React.KeyboardEvent<HTMLButtonElement>, idx: number) {
+    const arrows = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+    if (!arrows.includes(e.key)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const neighbor = getNeighbor(idx, e.key);
+    if (neighbor !== null && btnRefs.current[neighbor]) {
+      btnRefs.current[neighbor]?.focus();
+    }
+  }
+
   const btnSize = "clamp(54px, 6.5vw, 90px)";
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "clamp(8px, 1.2vw, 16px)" }}>
-      {layout.flat().map((key, i) => {
+      {flatKeys.map((key, i) => {
         if (key === "") return <div key={`e${i}`} />;
         const isDelete = key === "⌫";
         const isFocused = flash === key;
         return (
-          <button key={key} data-testid={`numpad-${isDelete ? "delete" : key}`} disabled={disabled}
+          <button
+            key={key}
+            ref={(el) => { btnRefs.current[i] = el; }}
+            data-testid={`numpad-${isDelete ? "delete" : key}`}
+            disabled={disabled}
+            tabIndex={0}
+            className="numpad-btn"
             onClick={() => { if (disabled) return; isDelete ? onDelete() : onDigit(key); }}
+            onKeyDown={(e) => handleButtonKeyDown(e, i)}
             style={{
               width: btnSize, height: btnSize,
               background: isFocused ? "rgba(0,255,102,0.22)" : "rgba(255,255,255,0.05)",
@@ -263,8 +300,7 @@ function NumPad({ onDigit, onDelete, disabled }: { onDigit: (d: string) => void;
               display: "flex", alignItems: "center", justifyContent: "center",
               boxShadow: isFocused ? "0 0 18px rgba(0,255,102,0.45)" : "none",
               transform: isFocused ? "scale(1.08)" : "scale(1)",
-              transition: "all 0.1s ease",
-              outline: "none",
+              transition: "all 0.2s ease",
             }}>{key}</button>
         );
       })}
