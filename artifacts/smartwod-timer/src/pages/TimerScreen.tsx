@@ -372,6 +372,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 
         {(state.phase === "running" || state.phase === "rest") && (
           <>
+            <img src="/logo.png" alt="SmartWOD" className="timer-logo" />
             <ProgressCircle progress={progress} size={circleSize} strokeWidth={13} color={displayColor}>
               <div
                 className={isWarning ? "timer-warning" : ""}

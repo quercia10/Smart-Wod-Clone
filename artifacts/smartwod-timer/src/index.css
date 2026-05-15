@@ -258,6 +258,16 @@
   padding: 2vh 4vw;
 }
 
+/* Timer logo: a sinistra del cerchio in landscape */
+.timer-logo {
+  width: clamp(56px, 7vw, 96px);
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 1;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 102, 0.25));
+}
+
 /* Config fields container */
 .config-fields {
   display: flex;
@@ -335,6 +345,12 @@
     padding: 0.5vh 5vw 2vh;
     align-items: center;
     justify-content: center;
+  }
+
+  /* Logo più piccolo e sopra il cerchio in portrait */
+  .timer-logo {
+    width: clamp(36px, 10vw, 58px);
+    filter: drop-shadow(0 0 6px rgba(0, 255, 102, 0.2));
   }
 
   /* Config fields full-width */
