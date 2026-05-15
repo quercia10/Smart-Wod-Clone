@@ -2,71 +2,74 @@ let audioCtx: AudioContext | null = null;
 
 function getCtx(): AudioContext {
   if (!audioCtx) {
-    audioCtx = new AudioContext();
+    audioCtx = new AudioContext({ latencyHint: "interactive" });
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
   }
   return audioCtx;
 }
 
-function playTone(
+function bell(
+  ctx: AudioContext,
   freq: number,
-  duration: number,
-  volume = 0.6,
-  type: OscillatorType = "square",
-  delay = 0,
+  peakGain: number,
+  decayTime: number,
+  startAt = 0,
 ): void {
-  const ctx = getCtx();
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
-
-  oscillator.type = type;
-  oscillator.frequency.setValueAtTime(freq, ctx.currentTime + delay);
-
-  gainNode.gain.setValueAtTime(0, ctx.currentTime + delay);
-  gainNode.gain.linearRampToValueAtTime(volume, ctx.currentTime + delay + 0.01);
-  gainNode.gain.linearRampToValueAtTime(0, ctx.currentTime + delay + duration);
-
-  oscillator.start(ctx.currentTime + delay);
-  oscillator.stop(ctx.currentTime + delay + duration + 0.01);
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + startAt);
+  gain.gain.setValueAtTime(0, ctx.currentTime + startAt);
+  gain.gain.linearRampToValueAtTime(peakGain, ctx.currentTime + startAt + 0.009);
+  gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + startAt + decayTime);
+  osc.start(ctx.currentTime + startAt);
+  osc.stop(ctx.currentTime + startAt + decayTime + 0.02);
 }
 
-export function playBeep(): void {
-  playTone(880, 0.12, 0.5, "square");
-}
-
+/* ── Countdown beep: sordo, basso, 375Hz ── */
 export function playCountdownBeep(): void {
-  playTone(660, 0.15, 0.55, "square");
+  const ctx = getCtx();
+  bell(ctx, 375, 0.48, 0.18);
 }
 
+/* ── AMRAP: +giro feedback ── */
+export function playBeep(): void {
+  const ctx = getCtx();
+  bell(ctx, 600, 0.45, 0.14);
+}
+
+/* ── Triple beep: ripresa dopo rest / round-pause ── */
 export function playTripleBeep(): void {
-  playTone(880, 0.1, 0.5, "square", 0);
-  playTone(880, 0.1, 0.5, "square", 0.15);
-  playTone(880, 0.1, 0.5, "square", 0.3);
+  const ctx = getCtx();
+  [0, 0.20, 0.40].forEach((d) => bell(ctx, 700, 0.48, 0.13, d));
 }
 
+/* ── Start buzzer: campana digitale 800Hz con decadimento ── */
 export function playStartBuzzer(): void {
-  playTone(440, 0.08, 0.6, "sawtooth", 0);
-  playTone(550, 0.08, 0.6, "sawtooth", 0.1);
-  playTone(660, 0.08, 0.6, "sawtooth", 0.2);
-  playTone(880, 0.4, 0.7, "sawtooth", 0.3);
+  const ctx = getCtx();
+  bell(ctx, 800, 0.65, 1.0);
+  bell(ctx, 1600, 0.28, 0.5);
 }
 
+/* ── End buzzer: due toni discendenti ── */
 export function playEndBuzzer(): void {
-  playTone(880, 0.08, 0.6, "sawtooth", 0);
-  playTone(660, 0.08, 0.6, "sawtooth", 0.1);
-  playTone(440, 0.08, 0.6, "sawtooth", 0.2);
-  playTone(220, 0.6, 0.7, "sawtooth", 0.3);
+  const ctx = getCtx();
+  bell(ctx, 800, 0.60, 0.75, 0);
+  bell(ctx, 560, 0.55, 0.90, 0.35);
 }
 
+/* ── Rest beep: tono morbido a 500Hz ── */
 export function playRestBeep(): void {
-  playTone(440, 0.2, 0.5, "sine");
+  const ctx = getCtx();
+  bell(ctx, 500, 0.42, 0.36);
 }
 
 export function resumeAudio(): void {
-  const ctx = getCtx();
-  if (ctx.state === "suspended") {
-    ctx.resume();
+  if (audioCtx && audioCtx.state === "suspended") {
+    audioCtx.resume();
   }
 }

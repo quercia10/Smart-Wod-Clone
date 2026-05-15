@@ -162,6 +162,17 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   const bg       = phaseBg(state.phase);
   const progress = state.totalTime > 0 ? state.timeLeft / state.totalTime : 0;
 
+  /* ── avviso countdown: giallo neon negli ultimi 5s (lavoro/rest) o 10s (round-pause) ── */
+  const WARNING_COLOR = "#ffe600";
+  const isWarning = (
+    (state.phase === "running" || state.phase === "rest") &&
+    state.timeLeft > 0 && state.timeLeft <= 5
+  ) || (
+    state.phase === "round-pause" &&
+    state.timeLeft > 0 && state.timeLeft <= 10
+  );
+  const displayColor = isWarning ? WARNING_COLOR : color;
+
   /* ── callbacks ── */
   const addRound = useCallback(() => {
     setState((p) => ({ ...p, roundCount: p.roundCount + 1 }));
@@ -186,7 +197,9 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         ? prev.elapsedForTime + 1
         : prev.elapsedForTime;
 
-      if (newLeft <= 3 && newLeft > 0 && lastBeepRef.current !== newLeft) {
+      // round-pause (lunga) → avviso a 10s; tutto il resto → avviso a 5s
+      const warnAt = prev.phase === "round-pause" ? 10 : 5;
+      if (newLeft <= warnAt && newLeft > 0 && lastBeepRef.current !== newLeft) {
         lastBeepRef.current = newLeft;
         playCountdownBeep();
       }
@@ -353,16 +366,21 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
             timeLeft={state.timeLeft} totalTime={state.totalTime}
             currentRound={state.currentRound} totalRounds={state.totalRounds}
             phrase={state.phrase} circleSize={Math.min(circleSize, 300)}
+            isWarning={isWarning}
           />
         )}
 
         {(state.phase === "running" || state.phase === "rest") && (
           <>
-            <ProgressCircle progress={progress} size={circleSize} strokeWidth={13} color={color}>
-              <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,15vmin,130px)", fontWeight: 700, color, textShadow: `0 0 20px ${color},0 0 40px ${color}66`, letterSpacing: "0.02em", lineHeight: 1 }} data-testid="timer-display">
+            <ProgressCircle progress={progress} size={circleSize} strokeWidth={13} color={displayColor}>
+              <div
+                className={isWarning ? "timer-warning" : ""}
+                style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,15vmin,130px)", fontWeight: 700, color: displayColor, textShadow: `0 0 20px ${displayColor},0 0 40px ${displayColor}66`, letterSpacing: "0.02em", lineHeight: 1 }}
+                data-testid="timer-display"
+              >
                 {mode === "FOR_TIME" ? formatTime(state.elapsedForTime) : formatTime(state.timeLeft)}
               </div>
-              <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(11px,1.2vw,16px)", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "8px" }}>
+              <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(11px,1.2vw,16px)", color: isWarning ? "rgba(255,230,0,0.55)" : "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "8px" }}>
                 {mode === "FOR_TIME" ? "TRASCORSI" : state.phase === "rest" ? "RECUPERO" : "RIMANENTI"}
               </div>
             </ProgressCircle>
@@ -395,21 +413,26 @@ function CountdownDisplay({ countdownNum }: { countdownNum: number }) {
   );
 }
 
-function RoundPauseDisplay({ timeLeft, totalTime, currentRound, totalRounds, phrase, circleSize }: {
-  timeLeft: number; totalTime: number; currentRound: number; totalRounds: number; phrase: string; circleSize: number;
+function RoundPauseDisplay({ timeLeft, totalTime, currentRound, totalRounds, phrase, circleSize, isWarning }: {
+  timeLeft: number; totalTime: number; currentRound: number; totalRounds: number; phrase: string; circleSize: number; isWarning?: boolean;
 }) {
+  const WARNING_COLOR = "#ffe600";
+  const displayColor = isWarning ? WARNING_COLOR : PAUSE_COLOR;
   const progress = totalTime > 0 ? timeLeft / totalTime : 0;
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "3vh", maxWidth: "92vw" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(16px,2.2vw,32px)", fontWeight: 500, color: PAUSE_COLOR, textShadow: `0 0 15px ${PAUSE_COLOR}`, letterSpacing: "0.2em" }}>
+      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(16px,2.2vw,32px)", fontWeight: 500, color: displayColor, textShadow: `0 0 15px ${displayColor}`, letterSpacing: "0.2em" }}>
         PAUSA SERIE — SERIE {currentRound} / {totalRounds}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: "clamp(28px,5vw,70px)", flexWrap: "wrap", justifyContent: "center" }}>
-        <ProgressCircle progress={progress} size={circleSize} strokeWidth={11} color={PAUSE_COLOR}>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,12vmin,100px)", fontWeight: 700, color: PAUSE_COLOR, textShadow: `0 0 20px ${PAUSE_COLOR}`, lineHeight: 1 }}>
+        <ProgressCircle progress={progress} size={circleSize} strokeWidth={11} color={displayColor}>
+          <div
+            className={isWarning ? "timer-warning" : ""}
+            style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(36px,12vmin,100px)", fontWeight: 700, color: displayColor, textShadow: `0 0 20px ${displayColor}`, lineHeight: 1 }}
+          >
             {formatTime(timeLeft)}
           </div>
-          <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,14px)", color: "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "6px" }}>RIPARTENZA</div>
+          <div style={{ fontFamily: "Roboto,sans-serif", fontSize: "clamp(10px,1.1vw,14px)", color: isWarning ? "rgba(255,230,0,0.55)" : "rgba(255,255,255,0.3)", letterSpacing: "0.2em", marginTop: "6px" }}>RIPARTENZA</div>
         </ProgressCircle>
 
         <div style={{ maxWidth: "min(540px, 82vw)", background: "rgba(68,136,204,0.07)", border: "1px solid rgba(68,136,204,0.3)", borderRadius: "12px", padding: "clamp(18px,3vh,32px) clamp(18px,3vw,36px)", display: "flex", flexDirection: "column", gap: "14px" }}>
