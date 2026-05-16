@@ -178,6 +178,11 @@
   0%, 100% { opacity: 1;    }
   50%       { opacity: 0.42; }
 }
+@keyframes phase-flash {
+  0%   { opacity: 0.28; }
+  18%  { opacity: 0.16; }
+  100% { opacity: 0; }
+}
 @keyframes shake {
   0%,100% { transform: translateX(0); }
   15%     { transform: translateX(-10px); }

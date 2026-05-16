@@ -184,6 +184,9 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     setState((p) => ({ ...p, phase: "done", phrase: getRandomFrase() }));
   }, []);
 
+  const [flashKey,   setFlashKey]   = useState(0);
+  const [flashColor, setFlashColor] = useState<string>(WORK_COLOR);
+
   const togglePause = useCallback(() => {
     setState((p) => ({ ...p, paused: !p.paused }));
   }, []);
@@ -226,17 +229,31 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [state.phase, state.paused, tick]);
 
-  /* ── sounds on phase change ── */
+  /* ── sounds + flash on phase change ── */
   useEffect(() => {
     const prev = prevPhaseRef.current;
     if (state.phase === prev) return;
     prevPhaseRef.current = state.phase;
-    if (state.phase === "running" && prev === "countdown") playStartBuzzer();
-    else if (state.phase === "rest") playRestBeep();
-    else if (state.phase === "running" && (prev === "rest" || prev === "round-pause")) playTripleBeep();
-    else if (state.phase === "round-pause") playRestBeep();
-    else if (state.phase === "done") playEndBuzzer();
-  }, [state.phase]);
+
+    const triggerFlash = (c: string) => { setFlashColor(c); setFlashKey((k) => k + 1); };
+
+    if (state.phase === "running" && prev === "countdown") {
+      playStartBuzzer();
+      triggerFlash(MODE_COLOR[mode]);
+    } else if (state.phase === "rest") {
+      playRestBeep();
+      triggerFlash(REST_COLOR);
+    } else if (state.phase === "running" && (prev === "rest" || prev === "round-pause")) {
+      playTripleBeep();
+      triggerFlash(mode === "TABATA" ? WORK_COLOR : MODE_COLOR[mode]);
+    } else if (state.phase === "round-pause") {
+      playRestBeep();
+      triggerFlash(PAUSE_COLOR);
+    } else if (state.phase === "done") {
+      playEndBuzzer();
+      triggerFlash(DONE_COLOR);
+    }
+  }, [state.phase, mode]);
 
   /* ── auto-focus: ensure TV D-Pad events are captured ── */
   useEffect(() => {
@@ -309,6 +326,20 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     >
       {/* Phase tint */}
       <div style={{ position: "absolute", inset: 0, background: bg, transition: "background 0.5s ease", pointerEvents: "none", zIndex: 1 }} />
+
+      {/* Phase-change flash */}
+      {flashKey > 0 && (
+        <div
+          key={flashKey}
+          style={{
+            position: "absolute", inset: 0,
+            background: flashColor,
+            pointerEvents: "none",
+            zIndex: 4,
+            animation: "phase-flash 0.65s ease-out forwards",
+          }}
+        />
+      )}
 
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2vh 4vw", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative", zIndex: 2 }}>
