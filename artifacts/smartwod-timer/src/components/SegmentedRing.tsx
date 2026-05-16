@@ -122,7 +122,7 @@ export default function SegmentedRing({ progress, size, activeColor, children }:
         }}
       >
         <img
-          src="/logo.png"
+          src={`${import.meta.env.BASE_URL}logo.png`.replace(/\/+/g, "/")}
           alt=""
           aria-hidden
           style={{ width: "70%", height: "70%", objectFit: "contain", opacity: 0.20, userSelect: "none" }}

@@ -1,0 +1,37 @@
+Aggiorna lo stile visivo dell'intera applicazione per implementare lo stile premium mostrato nell'immagine fornita. Questo nuovo stile deve essere applicato a tutti i timer dell'applicazione (non solo a quello Tabata), garantendo coerenza globale.
+
+1. Stile Globale dei Timer:
+
+Implementa un dark mode totale con uno sfondo charcoal scuro (#121212) e testo principale bianco avorio.
+
+Palette colori specifica per tutti i timer: verde smeraldo luminoso (#2ECC71) e arancione/ambra (#E67E22).
+
+Utilizza un font sans-serif moderno e pulito, altamente leggibile.
+
+Tutte le interfacce timer devono avere una struttura a due colonne principali (un lato per il timer, un lato per lo stato).
+
+2. Il Grande Timer Circolare (Applicare a tutti i timer principali):
+
+Ricrea l'anello di segmenti rettangolari arrotondati, con una finitura texturizzata e lucida.
+
+I segmenti devono essere verde smeraldo luminoso con un bagliore (glow) pronunciato.
+
+La logica di riempimento deve essere oraria.
+
+Al centro, i numeri digitali bold in verde smeraldo ("00:19" nell'esempio) e il testo secondario ("RIMANENTI" nell'esempio).
+
+3. Centratura del Logo di Sfondo (Punto Critico):
+
+Descrizione del Logo: Un grande logo "TC" stilizzato, filigranato, in grigio scuro e semi-trasparente.
+
+Requisito Posizionamento: Deve essere posizionato in modo tale che il suo centro geometrico coincida esattamente con il centro geometrico del grande timer circolare centrale. (Il logo si estende a destra, ma il suo centro visivo deve essere dietro il timer).
+
+4. Altri Elementi Visivi da Standardizzare (e applicare globalmente dove appropriato):
+
+Barra Superiore: Testo bicolore (verde smeraldo per il nome del timer, bianco per lo stato), pulsante arancione/ambra per azioni (come "RIPRENDI").
+
+Badge e Icone: Il badge circolare "TC" a sinistra con bordo luminoso. Le icone di stato a pillola (Esercizio) e quadrate (Serie) con effetto vetro e bagliore.
+
+5. Implementazione Globale:
+
+Traduci queste regole visive in regole CSS globali o in un componente di timer centrale che tutti i timer dell'app utilizzano."

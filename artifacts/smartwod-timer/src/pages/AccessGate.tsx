@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { tryActivate, ActivateResult } from "@/lib/license";
+import BackgroundLogo from "@/components/BackgroundLogo";
 
 const CODE_LENGTH = 6;
 
@@ -87,6 +88,7 @@ export default function AccessGate({ mode, onUnlock }: AccessGateProps) {
   return (
     <div style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
 
+      <BackgroundLogo />
       {/* App title */}
       <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(18px,2.5vw,36px)", fontWeight: 700, letterSpacing: "0.06em", color: "#F8F9FA", marginBottom: "4vh", textTransform: "uppercase" }}>
         SmartWOD Timer

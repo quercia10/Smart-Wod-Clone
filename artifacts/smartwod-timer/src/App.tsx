@@ -4,7 +4,6 @@ import ConfigScreen from "@/pages/ConfigScreen";
 import TimerScreen from "@/pages/TimerScreen";
 import AccessGate from "@/pages/AccessGate";
 import TrialBanner from "@/pages/TrialBanner";
-import BackgroundLogo from "@/components/BackgroundLogo";
 import { checkLicense, markTrialUsed } from "@/lib/license";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 
@@ -60,8 +59,7 @@ export default function App() {
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#121212", overflow: "hidden", position: "relative" }}>
-      <BackgroundLogo />
-      <div style={{ position: "relative", zIndex: 2, width: "100%", height: "100%" }}>
+      <div style={{ position: "relative", width: "100%", height: "100%" }}>
         {screen === "gate" && (
           <AccessGate mode="normal" onUnlock={handleUnlock} />
         )}

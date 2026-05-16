@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { WorkoutMode, WorkoutConfig, MODE_LABELS, MODE_SUBTITLES } from "@/lib/types";
 import { resumeAudio } from "@/lib/sound";
+import BackgroundLogo from "@/components/BackgroundLogo";
 
 const MODES: WorkoutMode[] = ["AMRAP", "FOR_TIME", "EMOM", "TABATA"];
 
@@ -53,6 +54,7 @@ export default function MenuScreen({ onSelect }: MenuScreenProps) {
   return (
     <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
 
+      <BackgroundLogo />
       {/* Header */}
       <div style={{ textAlign: "center", marginBottom: "5vh" }}>
         <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(22px, 3.2vw, 48px)", fontWeight: 700, letterSpacing: "0.06em", color: "#F8F9FA", textTransform: "uppercase" }}>

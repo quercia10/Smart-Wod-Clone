@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { WorkoutMode, WorkoutConfig } from "@/lib/types";
 import { resumeAudio } from "@/lib/sound";
+import BackgroundLogo from "@/components/BackgroundLogo";
 
 interface ConfigScreenProps {
   mode: WorkoutMode;
@@ -103,6 +104,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
   return (
     <div style={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
 
+      <BackgroundLogo />
       {/* Mode title */}
       <div style={{ textAlign: "center", marginBottom: "4vh" }}>
         <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(28px, 4.5vw, 64px)", fontWeight: 700, color: accent, letterSpacing: "0.08em", textTransform: "uppercase" }}>

@@ -312,13 +312,18 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2vh 4vw", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative", zIndex: 2 }}>
-        <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(16px,2.2vw,30px)", fontWeight: 700, color, letterSpacing: "0.06em" }}>
-          {mode.replace("_", " ")}
-          {mode === "TABATA" && state.phase !== "countdown" && state.phase !== "done" && (
-            <span style={{ fontSize: "65%", fontWeight: 400, marginLeft: "12px", color: "rgba(248,249,250,0.4)", letterSpacing: "0.04em" }}>
-              {state.phase === "running" ? "LAVORO" : state.phase === "rest" ? "RECUPERO" : "PAUSA SERIE"}
-            </span>
-          )}
+        <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px,1.4vw,18px)" }}>
+          <div style={{ width: "clamp(32px,3.8vw,48px)", height: "clamp(32px,3.8vw,48px)", borderRadius: "50%", border: `2px solid ${color}`, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1.2vw,16px)", fontWeight: 800, color, boxShadow: `0 0 14px ${color}55`, flexShrink: 0 }}>
+            TC
+          </div>
+          <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(16px,2.2vw,30px)", fontWeight: 700, color, letterSpacing: "0.06em" }}>
+            {mode.replace("_", " ")}
+            {mode === "TABATA" && state.phase !== "countdown" && state.phase !== "done" && (
+              <span style={{ fontSize: "65%", fontWeight: 400, marginLeft: "12px", color: "rgba(248,249,250,0.4)", letterSpacing: "0.04em" }}>
+                {state.phase === "running" ? "LAVORO" : state.phase === "rest" ? "RECUPERO" : "PAUSA SERIE"}
+              </span>
+            )}
+          </div>
         </div>
 
         {(mode === "EMOM" || mode === "TABATA") && state.phase !== "countdown" && state.phase !== "done" && (
@@ -666,7 +671,7 @@ function BrandBadge({ size }: { size: number }) {
       }}
     >
       <img
-        src="/logo.png"
+        src={`${import.meta.env.BASE_URL}logo.png`.replace(/\/+/g, "/")}
         alt="SmartWOD"
         style={{ width: "62%", height: "62%", objectFit: "contain", opacity: 0.88 }}
       />
