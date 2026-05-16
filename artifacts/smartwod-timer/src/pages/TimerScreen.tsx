@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ProgressCircle from "@/components/ProgressCircle";
+import SegmentedRing from "@/components/SegmentedRing";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 import { getRandomFrase } from "@/lib/frasi";
 import {
@@ -372,10 +373,8 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 
         {(state.phase === "running" || state.phase === "rest") && (
           <>
-            <div className="timer-logo-wrap">
-              <img src="/logo.png" alt="SmartWOD" />
-            </div>
-            <ProgressCircle progress={progress} size={circleSize} strokeWidth={10} color={displayColor}>
+            <BrandBadge size={Math.max(56, Math.round(circleSize * 0.17))} />
+            <SegmentedRing progress={progress} size={circleSize} activeColor={displayColor}>
               <div
                 className={isWarning ? "timer-warning" : ""}
                 style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(48px,15vmin,130px)", fontWeight: 700, color: displayColor, letterSpacing: "0.02em", lineHeight: 1 }}
@@ -383,10 +382,10 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
               >
                 {mode === "FOR_TIME" ? formatTime(state.elapsedForTime) : formatTime(state.timeLeft)}
               </div>
-              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(10px,1.1vw,15px)", fontWeight: 500, color: isWarning ? "rgba(241,196,15,0.65)" : "rgba(248,249,250,0.35)", letterSpacing: "0.14em", marginTop: "8px", textTransform: "uppercase" }}>
+              <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(10px,1.1vw,14px)", fontWeight: 500, color: isWarning ? "rgba(241,196,15,0.65)" : "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginTop: "10px", textTransform: "uppercase" }}>
                 {mode === "FOR_TIME" ? "TRASCORSI" : state.phase === "rest" ? "RECUPERO" : "RIMANENTI"}
               </div>
-            </ProgressCircle>
+            </SegmentedRing>
 
             <RightPanel
               config={config} state={state} mode={mode}
@@ -571,46 +570,106 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
   /* ── TABATA ── */
   const tabataColor = state.phase === "running" ? WORK_COLOR : REST_COLOR;
   return (
-    <div style={{ textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "18px", minWidth: "clamp(160px,22vw,320px)" }}>
-      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(22px,3.2vw,46px)", fontWeight: 700, color: tabataColor, letterSpacing: "0.06em" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "clamp(14px,2.2vh,26px)", minWidth: "clamp(180px,24vw,340px)" }}>
+
+      {/* Phase label */}
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(26px,3.8vw,54px)", fontWeight: 800, color: tabataColor, letterSpacing: "0.04em" }}>
         {state.phase === "running" ? "LAVORA!" : "RECUPERO"}
       </div>
 
-      {/* Sets per round dots */}
+      {/* Exercise pills */}
       <div>
-        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(9px,0.9vw,12px)", fontWeight: 500, color: "rgba(248,249,250,0.28)", letterSpacing: "0.14em", marginBottom: "8px", textTransform: "uppercase" }}>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 600, color: "#F8F9FA", letterSpacing: "0.06em", marginBottom: "clamp(8px,1.2vh,14px)", textTransform: "uppercase" }}>
           Esercizio {state.currentSet} / {setsPerRound}
         </div>
-        <div style={{ display: "flex", gap: "8px", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: "clamp(8px,1vw,14px)" }}>
           {Array.from({ length: setsPerRound }).map((_, i) => {
-            const done    = i < state.currentSet - 1;
-            const current = i === state.currentSet - 1;
+            const active = i <= state.currentSet - 1;
             return (
-              <div key={i} style={{ width: 24, height: 24, borderRadius: 6, background: done ? `${WORK_COLOR}55` : current ? WORK_COLOR : "rgba(255,255,255,0.09)", transition: "all 0.25s ease" }} />
+              <div key={i} style={{
+                width: "clamp(44px,5.5vw,76px)",
+                height: "clamp(22px,2.8vw,38px)",
+                borderRadius: "999px",
+                background: active
+                  ? "linear-gradient(145deg, #3de07e 0%, #22a855 100%)"
+                  : "linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 100%)",
+                border: `1px solid ${active ? "rgba(0,0,0,0.18)" : "rgba(255,255,255,0.08)"}`,
+                boxShadow: active
+                  ? "0 2px 10px rgba(46,204,113,0.40), inset 0 1px 0 rgba(255,255,255,0.22)"
+                  : "inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 4px rgba(0,0,0,0.4)",
+                transition: "all 0.3s ease",
+              }} />
             );
           })}
         </div>
       </div>
 
-      {/* Round dots */}
+      {/* Round squares */}
       <div>
-        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(9px,0.9vw,12px)", fontWeight: 500, color: "rgba(248,249,250,0.28)", letterSpacing: "0.14em", marginBottom: "8px", textTransform: "uppercase" }}>
+        <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 600, color: "#F8F9FA", letterSpacing: "0.06em", marginBottom: "clamp(8px,1.2vh,14px)", textTransform: "uppercase" }}>
           Serie {state.currentRound} / {totalRounds}
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", justifyContent: "center", maxWidth: "220px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "clamp(7px,0.9vw,12px)", maxWidth: "260px" }}>
           {Array.from({ length: totalRounds }).map((_, i) => {
-            const done    = i < state.currentRound - 1;
-            const current = i === state.currentRound - 1;
+            const active = i <= state.currentRound - 1;
             return (
-              <div key={i} style={{ width: 20, height: 20, borderRadius: 5, background: done ? `${PAUSE_COLOR}55` : current ? PAUSE_COLOR : "rgba(255,255,255,0.09)", transition: "all 0.25s ease" }} />
+              <div key={i} style={{
+                width: "clamp(22px,2.8vw,38px)",
+                height: "clamp(22px,2.8vw,38px)",
+                borderRadius: "7px",
+                background: active
+                  ? "linear-gradient(145deg, #5bc4f6 0%, #2883cc 100%)"
+                  : "linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 100%)",
+                border: `1px solid ${active ? "rgba(0,0,0,0.18)" : "rgba(255,255,255,0.08)"}`,
+                boxShadow: active
+                  ? "0 2px 10px rgba(52,152,219,0.40), inset 0 1px 0 rgba(255,255,255,0.22)"
+                  : "inset 0 1px 0 rgba(255,255,255,0.05), 0 1px 4px rgba(0,0,0,0.4)",
+                transition: "all 0.3s ease",
+              }} />
             );
           })}
         </div>
       </div>
 
-      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em" }}>
+      {/* Hint */}
+      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.2)", letterSpacing: "0.06em", marginTop: "4px" }}>
         INVIO = Pausa &nbsp;·&nbsp; ESC = Menu
       </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── Brand Badge ───────────────────────── */
+
+function BrandBadge({ size }: { size: number }) {
+  const ring = Math.max(2, Math.round(size * 0.07));
+  return (
+    <div
+      className="dpad-hint"
+      style={{
+        width: size,
+        height: size,
+        flexShrink: 0,
+        alignSelf: "center",
+        borderRadius: "50%",
+        background: "radial-gradient(circle at 36% 32%, #484848 0%, #252525 55%, #181818 100%)",
+        border: `${ring}px solid #3c3c3c`,
+        boxShadow:
+          `0 0 0 ${Math.max(1, ring - 1)}px #555, ` +
+          `0 0 0 ${ring * 2}px #222, ` +
+          "0 6px 24px rgba(0,0,0,0.7), " +
+          "0 0 32px rgba(46,204,113,0.10)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+      }}
+    >
+      <img
+        src="/logo.png"
+        alt="SmartWOD"
+        style={{ width: "62%", height: "62%", objectFit: "contain", opacity: 0.88 }}
+      />
     </div>
   );
 }

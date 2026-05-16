@@ -1,0 +1,45 @@
+Implementa questa specifica interfaccia web per un'app di timer per allenamento funzionale. L'obiettivo è replicare pixel-perfect il design moderno e premium mostrato nell'immagine fornita, applicando una correzione strutturale e CSS per il logo di sfondo.
+
+1. STRUTTURA DEL LAYOUT:
+
+Crea un layout a due colonne principale su uno sfondo grigio scuro opaco (deep charcoal).
+
+La colonna sinistra è dominata dal timer circolare centrale.
+
+La colonna destra contiene i dati dell'allenamento.
+
+2. IL TIMER CIRCOLARE CENTRALIZZATO (CON CORREZIONE CENTRATURA):
+
+Questo è l'elemento principale. Crea un contenitore unico per il timer (ad esempio .timer-container) che racchiuda l'anello dei segmenti, i numeri del tempo e il logo di sfondo. Imposta questo contenitore come position: relative; display: flex; align-items: center; justify-content: center;.
+
+Centratura del Logo di Sfondo rispetto al Timer: Il logo di sfondo (logo.png, l'icona umana stilizzata) NON deve essere applicato al body della pagina e non deve centrarsi rispetto all'intero schermo. Il pannello quadrato di vetro traslucido con il logo al centro deve essere inserito dentro il .timer-container con position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1;.
+
+Dimensioni e Aspetto: Il pannello quadrato con il logo di sfondo deve essere abbastanza grande da toccare quasi i bordi interni dell'anello circolare, risultando ben visibile, centrato al millimetro dietro i numeri e con un'opacità nitida ma che non disturbi la lettura del tempo.
+
+L'Anello dei Segmenti: Costruisci un grande anello circolare composto da dodici segmenti separati. Questi segmenti devono avere una texture metallica scura e spazzolata.
+
+Logica del Progress Bar: I segmenti devono riempirsi gradualmente con un colore verde smeraldo vibrante e solido (senza neon, ma lucido) in base al tempo rimanente. Iniziano completamente grigi e si riempiono in senso orario.
+
+Il Tempo: All'interno dell'anello, al centro, mostra il tempo in formato 'MM:SS' (es. 00:16). I numeri del tempo devono stare sopra il logo di sfondo, quindi con un z-index: 2. Usa un font sans-serif pulito e bold. Sopra il tempo, la label 'RIMANENTI' in caratteri più piccoli e bianchi.
+
+3. DATI DELL'ALLENAMENTO (COLONNA DESTRA):
+
+In alto a destra, label bold e verde smeraldo: LAVORA! (o 'PAUSA!', 'RIPOSO!', 'ROUND FINITO!' in base alla fase).
+
+Sotto, label bianca: 'ESERCIZIO 1 / 2'. A seguire, due indicatori a forma di pillola (rounded rectangles) con un effetto 'vetro 3D' lucido. Il primo è riempito in verde smeraldo solido, il secondo è grigio scuro traslucido.
+
+Sotto, label bianca: 'SERIE 1 / 4'. A seguire, quattro piccoli quadrati con lo stesso effetto vetro. Il primo è riempito in un blu cielo solido, gli altri tre sono grigio scuro traslucido.
+
+In fondo, allineato a destra, testo d'istruzioni piccolo e bianco: 'INVIO = Pausa · ESC = Menu'.
+
+4. LOGO BRAND (FAR LEFT):
+
+In alto a sinistra, posiziona il badge circolare del logo del brand. È un cerchio metallico scuro e lucido con un anello esterno cromato e un bagliore (back-glow) morbido. All'interno del cerchio, il logo stilizzato 'TC'. Mantieni questo badge piccolo, elegante e isolato sul lato sinistro esterno del timer, esattamente come mostrato nel mockup.
+
+5. TECNOLOGIE E DETTAGLI:
+
+Tutto il codice deve essere contenuto in file HTML, CSS e JavaScript standard. Usa CSS Grid e Flexbox per il layout.
+
+Per i segmenti del timer circolare e le icone di stato, usa SVG per garantire scalabilità e precisione pixel-perfect. Le texture metalliche e l'effetto vetro devono essere riprodotti fedelmente con gradienti e ombre CSS.
+
+Il codice JavaScript deve gestire la logica del timer (decremento del tempo, aggiornamento dei segmenti, cambio delle label).

@@ -1,0 +1,43 @@
+Implementa questa specifica interfaccia web per un'app di timer per allenamento funzionale. L'obiettivo è replicare pixel-perfect il design moderno e premium mostrato nell'immagine fornita.
+
+1. STRUTTURA DEL LAYOUT:
+
+Crea un layout a due colonne principale su uno sfondo grigio scuro opaco (deep charcoal).
+
+La colonna sinistra è dominata dal timer circolare centrale.
+
+La colonna destra contiene i dati dell'allenamento.
+
+2. IL TIMER CIRCOLARE CENTRALIZZATO:
+
+Questo è l'elemento principale. Costruisci un grande anello circolare composto da dodici segmenti separati.
+
+Questi segmenti devono avere una texture metallica scura e spazzolata.
+
+Logica del Progress Bar: I segmenti devono riempirsi gradualmente con un colore verde smeraldo vibrante e solido (senza neon, ma lucido) in base al tempo rimanente. Iniziano completamente grigi e si riempiono in senso orario.
+
+Pannello di Sfondo (Cruciale): Posiziona un grande pannello quadrato con un effetto 'vetro traslucido' (frosted glass) centrato dietro l'anello dei segmenti. Al centro di questo pannello di vetro, inserisci un'icona stilizzata e grigio chiaro di una figura umana a braccia aperte (come l'Uomo Vitruviano).
+
+Il Tempo: All'interno dell'anello, al centro, mostra il tempo in formato "MM:SS" (es. 00:16). Usa un font sans-serif pulito e bold. Sopra il tempo, la label "RIMANENTI" in caratteri più piccoli e bianchi.
+
+3. DATI DELL'ALLENAMENTO (COLONNA DESTRA):
+
+In alto a destra, label bold e verde smeraldo: LAVORA! (o 'PAUSA!', 'RIPOSO!', 'ROUND FINITO!' in base alla fase).
+
+Sotto, label bianca: 'ESERCIZIO 1 / 2'. A seguire, due indicatori a forma di pillola (rounded rectangles) con un effetto 'vetro 3D' lucido. Il primo è riempito in verde smeraldo solido, il secondo è grigio scuro traslucido.
+
+Sotto, label bianca: 'SERIE 1 / 4'. A seguire, quattro piccoli quadrati con lo stesso effetto vetro. Il primo è riempito in un blu cielo solido, gli altri tre sono grigio scuro traslucido.
+
+In fondo, allineato a destra, testo d'istruzioni piccolo e bianco: 'INVIO = Pausa · ESC = Menu'.
+
+4. LOGO BRAND (FAR LEFT):
+
+In alto a sinistra, posiziona il badge circolare del logo del brand. È un cerchio metallico scuro e lucido con un anello esterno cromato e un bagliore (back-glow) morbido. All'interno del cerchio, il logo stilizzato 'TC'.
+
+5. TECNOLOGIE E DETTAGLI:
+
+Tutto il codice deve essere contenuto in file HTML, CSS e JavaScript standard. Usa CSS Grid e Flexbox per il layout.
+
+Per i segmenti del timer circolare e le icone di stato, usa SVG per garantire scalabilità e precisione pixel-perfect. Le texture metalliche e l'effetto vetro devono essere riprodotti fedelmente con gradienti e ombre CSS.
+
+Il codice JavaScript deve gestire la logica del timer (decremento del tempo, aggiornamento dei segmenti, cambio delle label)."
