@@ -12,16 +12,17 @@ export default function BackgroundLogo() {
         zIndex: 0,
         pointerEvents: "none",
         userSelect: "none",
+        overflow: "hidden",
       }}
     >
       <img
         src={logoUrl}
         alt=""
         style={{
-          width: "90vw",
-          height: "90vh",
-          objectFit: "contain",
-          opacity: 0.12,
+          width: "100vw",
+          height: "100vh",
+          objectFit: "cover",
+          opacity: 0.1,
           filter: "brightness(3) saturate(0)",
           mixBlendMode: "screen",
         }}
