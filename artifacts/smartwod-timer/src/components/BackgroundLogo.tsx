@@ -22,8 +22,8 @@ export default function BackgroundLogo() {
           width: "100vw",
           height: "100vh",
           objectFit: "cover",
-          opacity: 0.1,
-          filter: "brightness(3) saturate(0)",
+          opacity: 0.35,
+          filter: "brightness(1.6) saturate(2.0)",
           mixBlendMode: "screen",
         }}
       />
