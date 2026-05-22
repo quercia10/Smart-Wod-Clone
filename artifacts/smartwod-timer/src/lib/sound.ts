@@ -85,3 +85,25 @@ export function resumeAudio(): void {
     audioCtx.resume();
   }
 }
+
+/* ── Keep-awake: oscillatore inudibile per prevenire lo standby del TV ── */
+let wakeOsc: OscillatorNode | null = null;
+
+export function keepAwake(): void {
+  if (wakeOsc) return;
+  try {
+    const ctx = getCtx();
+    wakeOsc = ctx.createOscillator();
+    const g = ctx.createGain();
+    wakeOsc.connect(g);
+    g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    wakeOsc.frequency.setValueAtTime(20, ctx.currentTime);
+    wakeOsc.start();
+  } catch (_) {}
+}
+
+export function releaseAwake(): void {
+  try { wakeOsc?.stop(); } catch (_) {}
+  wakeOsc = null;
+}

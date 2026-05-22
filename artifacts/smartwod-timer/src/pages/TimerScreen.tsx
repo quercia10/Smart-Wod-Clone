@@ -12,6 +12,8 @@ import {
   playEndBuzzer,
   playFanfare,
   playRestBeep,
+  keepAwake,
+  releaseAwake,
 } from "@/lib/sound";
 
 interface TimerScreenProps {
@@ -165,7 +167,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   const WARNING_COLOR = "#F1C40F";
   const isWarning = (
     (state.phase === "running" || state.phase === "rest" || state.phase === "round-pause") &&
-    state.timeLeft > 0 && state.timeLeft <= 5
+    state.timeLeft > 0 && state.timeLeft <= 3
   );
   const displayColor = isWarning ? WARNING_COLOR : color;
 
@@ -196,8 +198,8 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         ? prev.elapsedForTime + 1
         : prev.elapsedForTime;
 
-      // avviso sonoro a 5s per tutte le fasi
-      const warnAt = 5;
+      // avviso sonoro a 3s per tutte le fasi
+      const warnAt = 3;
       if (newLeft <= warnAt && newLeft > 0 && lastBeepRef.current !== newLeft) {
         lastBeepRef.current = newLeft;
         playCountdownBeep();
@@ -250,17 +252,29 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     }
   }, [state.phase, mode]);
 
-  /* ── Wake Lock: prevent TV standby ── */
+  /* ── Wake Lock: prevent TV standby (API + audio fallback) ── */
   useEffect(() => {
     let lock: WakeLockSentinel | null = null;
+
     async function grab() {
-      try { lock = await (navigator as any).wakeLock.request("screen"); } catch (_) {}
+      try {
+        if ("wakeLock" in navigator) {
+          lock = await (navigator as any).wakeLock.request("screen");
+        }
+      } catch (_) {}
     }
+
     grab();
-    const onVisible = () => { if (document.visibilityState === "visible") grab(); };
+    keepAwake(); // oscillatore inudibile come fallback per TV senza WakeLock API
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") { grab(); keepAwake(); }
+    };
     document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       lock?.release();
+      releaseAwake();
       document.removeEventListener("visibilitychange", onVisible);
     };
   }, []);
