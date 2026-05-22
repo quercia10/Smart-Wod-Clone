@@ -164,7 +164,11 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   const prevPhaseRef = useRef<Phase | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const pauseBtnRef  = useRef<HTMLButtonElement>(null);
+  const menuBtnRef   = useRef<HTMLButtonElement>(null);
   const actionBtnRef = useRef<HTMLButtonElement>(null);
+
+  // D-pad focus tracking per Android TV
+  const [tvFocus, setTvFocus] = useState<"menu" | "pause">("pause");
 
   const color    = phaseColor(state.phase, mode);
   const bg       = phaseBg(state.phase);
@@ -296,12 +300,15 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     if (state.phase === "running") {
       if (mode === "AMRAP" || mode === "FOR_TIME") {
         setTimeout(() => actionBtnRef.current?.focus(), 50);
+        setTvFocus("pause");
       } else {
         setTimeout(() => pauseBtnRef.current?.focus(), 50);
+        setTvFocus("pause");
       }
     }
     if (state.phase === "rest" || state.phase === "round-pause") {
       setTimeout(() => pauseBtnRef.current?.focus(), 50);
+      setTvFocus("pause");
     }
   }, [state.phase, mode]);
 
@@ -323,23 +330,56 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         onBack(); return;
       }
+      // D-pad navigazione tra pulsanti (Android TV)
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        setTvFocus("menu");
+        menuBtnRef.current?.focus();
+        return;
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        if (state.phase !== "countdown" && state.phase !== "done") {
+          setTvFocus("pause");
+          pauseBtnRef.current?.focus();
+        }
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        if (mode === "AMRAP" && state.phase === "running") {
+          e.preventDefault(); addRound(); return;
+        }
+        e.preventDefault();
+        setTvFocus("menu");
+        menuBtnRef.current?.focus();
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        if (mode === "FOR_TIME" && state.phase === "running") {
+          e.preventDefault(); finishForTime(); return;
+        }
+        e.preventDefault();
+        if (state.phase !== "countdown" && state.phase !== "done") {
+          setTvFocus("pause");
+          pauseBtnRef.current?.focus();
+        }
+        return;
+      }
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         if (state.phase === "done") { onBack(); return; }
+        if (tvFocus === "menu") {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          onBack(); return;
+        }
         if (state.phase === "running" && mode === "AMRAP") { addRound(); return; }
         if (state.phase === "running" && mode === "FOR_TIME") { finishForTime(); return; }
         togglePause();
       }
-      if (e.key === "ArrowUp" && mode === "AMRAP" && state.phase === "running") {
-        e.preventDefault(); addRound();
-      }
-      if (e.key === "ArrowDown" && mode === "FOR_TIME" && state.phase === "running") {
-        e.preventDefault(); finishForTime();
-      }
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [state.phase, mode, onBack, addRound, finishForTime, togglePause]);
+  }, [state.phase, mode, tvFocus, onBack, addRound, finishForTime, togglePause]);
 
   /* ── responsive circle size ── */
   const computeCircleSize = useCallback(() => {
@@ -390,21 +430,26 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2vh 4vw", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative", zIndex: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px,1.4vw,18px)" }}>
           <button
+            ref={menuBtnRef}
             tabIndex={0}
             className="wod-btn"
             onClick={() => { if (intervalRef.current) clearInterval(intervalRef.current); onBack(); }}
+            onFocus={() => setTvFocus("menu")}
             style={{
               background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.14)",
+              border: `2px solid ${tvFocus === "menu" ? "#F8F9FA" : "rgba(255,255,255,0.14)"}`,
               borderRadius: "20px",
               padding: "clamp(5px,0.8vh,9px) clamp(12px,1.5vw,20px)",
               fontFamily: "Inter,sans-serif",
               fontSize: "clamp(11px,1.2vw,16px)",
               fontWeight: 600,
-              color: "rgba(248,249,250,0.7)",
+              color: tvFocus === "menu" ? "#F8F9FA" : "rgba(248,249,250,0.7)",
               cursor: "pointer",
               letterSpacing: "0.04em",
               flexShrink: 0,
+              outline: "none",
+              boxShadow: tvFocus === "menu" ? "0 0 0 3px rgba(248,249,250,0.35)" : "none",
+              transition: "border-color 0.15s, box-shadow 0.15s, color 0.15s",
             }}
           >
             ← MENU
@@ -432,9 +477,10 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
             tabIndex={0}
             className="wod-btn"
             onClick={togglePause}
+            onFocus={() => setTvFocus("pause")}
             style={{
               background: state.paused ? "#E67E22" : "rgba(255,255,255,0.07)",
-              border: `1px solid ${state.paused ? "#E67E22" : "rgba(255,255,255,0.14)"}`,
+              border: `2px solid ${state.paused ? "#E67E22" : tvFocus === "pause" ? "#F8F9FA" : "rgba(255,255,255,0.14)"}`,
               borderRadius: "20px",
               padding: "clamp(6px,1vh,10px) clamp(14px,2vw,26px)",
               fontFamily: "Inter, sans-serif",
@@ -443,6 +489,8 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
               color: state.paused ? "#121212" : "rgba(248,249,250,0.75)",
               cursor: "pointer",
               letterSpacing: "0.05em",
+              outline: "none",
+              boxShadow: tvFocus === "pause" && !state.paused ? "0 0 0 3px rgba(248,249,250,0.35)" : "none",
               transition: "all 0.18s ease",
               animation: state.paused ? "pulse-subtle 1.4s ease-in-out infinite" : "none",
             }}
