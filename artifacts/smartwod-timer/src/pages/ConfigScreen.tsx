@@ -89,7 +89,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
   const tabataTotalSeconds = mode === "TABATA"
     ? (values.rounds ?? 4) * (
         (values.setsPerRound ?? 2) * (values.workTime ?? 20)
-        + (values.setsPerRound ?? 2) * (values.restTime ?? 10)
+        + ((values.setsPerRound ?? 2) - 1) * (values.restTime ?? 10)
       )
       + ((values.rounds ?? 4) - 1) * (values.roundPauseTime ?? 60)
     : 0;

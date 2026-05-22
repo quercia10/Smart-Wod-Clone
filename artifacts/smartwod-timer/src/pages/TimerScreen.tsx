@@ -127,22 +127,24 @@ function advancePhase(prev: TimerState, config: WorkoutConfig): TimerState {
 
   if (mode === "TABATA") {
     if (prev.phase === "running") {
-      // Work set done — go to rest before the next set or round-pause
-      const restT = config.restTime ?? 10;
-      return { ...prev, phase: "rest", timeLeft: restT, totalTime: restT };
-    }
-    if (prev.phase === "rest") {
-      const nextSet = prev.currentSet + 1;
-      if (nextSet <= prev.setsPerRound) {
-        const t = config.workTime ?? 20;
-        return { ...prev, phase: "running", currentSet: nextSet, timeLeft: t, totalTime: t };
+      const isLastSet = prev.currentSet >= prev.setsPerRound;
+      if (!isLastSet) {
+        // Not the last exercise — insert rest before next set
+        const restT = config.restTime ?? 10;
+        return { ...prev, phase: "rest", timeLeft: restT, totalTime: restT };
       }
-      // All sets in round done — go to round-pause
+      // Last exercise of the round — skip rest, go directly to round-pause
       const nextRound = prev.currentRound + 1;
       if (nextRound > prev.totalRounds)
         return { ...prev, phase: "done", timeLeft: 0, phrase: getRandomFrase() };
       const pauseT = config.roundPauseTime ?? 60;
       return { ...prev, phase: "round-pause", timeLeft: pauseT, totalTime: pauseT, currentRound: nextRound, currentSet: 1, phrase: getRandomFrase() };
+    }
+    if (prev.phase === "rest") {
+      // Rest always leads to the next set
+      const nextSet = prev.currentSet + 1;
+      const t = config.workTime ?? 20;
+      return { ...prev, phase: "running", currentSet: nextSet, timeLeft: t, totalTime: t };
     }
     if (prev.phase === "round-pause") {
       const t = config.workTime ?? 20;
