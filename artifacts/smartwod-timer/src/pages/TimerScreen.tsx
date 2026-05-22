@@ -249,6 +249,21 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
     }
   }, [state.phase, mode]);
 
+  /* ── Wake Lock: prevent TV standby ── */
+  useEffect(() => {
+    let lock: WakeLockSentinel | null = null;
+    async function grab() {
+      try { lock = await (navigator as any).wakeLock.request("screen"); } catch (_) {}
+    }
+    grab();
+    const onVisible = () => { if (document.visibilityState === "visible") grab(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => {
+      lock?.release();
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, []);
+
   /* ── auto-focus: ensure TV D-Pad events are captured ── */
   useEffect(() => {
     containerRef.current?.focus();
@@ -271,7 +286,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   /* ── keyboard ── */
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape" || e.key === "Backspace") {
+      if (e.key === "Escape" || e.key === "Backspace" || e.key === "BrowserBack" || e.key === "GoBack") {
         if (intervalRef.current) clearInterval(intervalRef.current);
         onBack(); return;
       }
@@ -340,9 +355,26 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
       {/* Top bar */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "2vh 4vw", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative", zIndex: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "clamp(10px,1.4vw,18px)" }}>
-          <div style={{ width: "clamp(32px,3.8vw,48px)", height: "clamp(32px,3.8vw,48px)", borderRadius: "50%", border: `2px solid ${color}`, background: `${color}18`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1.2vw,16px)", fontWeight: 800, color, boxShadow: `0 0 14px ${color}55`, flexShrink: 0 }}>
-            TC
-          </div>
+          <button
+            tabIndex={0}
+            className="wod-btn"
+            onClick={() => { if (intervalRef.current) clearInterval(intervalRef.current); onBack(); }}
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.14)",
+              borderRadius: "20px",
+              padding: "clamp(5px,0.8vh,9px) clamp(12px,1.5vw,20px)",
+              fontFamily: "Inter,sans-serif",
+              fontSize: "clamp(11px,1.2vw,16px)",
+              fontWeight: 600,
+              color: "rgba(248,249,250,0.7)",
+              cursor: "pointer",
+              letterSpacing: "0.04em",
+              flexShrink: 0,
+            }}
+          >
+            ← MENU
+          </button>
           <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(16px,2.2vw,30px)", fontWeight: 700, color, letterSpacing: "0.06em" }}>
             {mode.replace("_", " ")}
             {mode === "TABATA" && state.phase !== "countdown" && state.phase !== "done" && (
@@ -391,7 +423,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         {state.phase === "countdown" && <CountdownDisplay countdownNum={state.countdownNum} />}
 
         {state.phase === "done" && (
-          <DoneDisplay mode={mode} elapsed={state.elapsedForTime} roundCount={state.roundCount} phrase={state.phrase} />
+          <DoneDisplay mode={mode} elapsed={state.elapsedForTime} roundCount={state.roundCount} phrase={state.phrase} onBack={onBack} />
         )}
 
         {state.phase === "round-pause" && (
@@ -405,7 +437,6 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 
         {(state.phase === "running" || state.phase === "rest") && (
           <>
-            <BrandBadge size={Math.max(56, Math.round(circleSize * 0.17))} />
             <SegmentedRing progress={progress} size={circleSize} activeColor={displayColor}>
               <div
                 className={isWarning ? "timer-warning" : ""}
@@ -487,39 +518,58 @@ function RoundPauseDisplay({ timeLeft, totalTime, currentRound, totalRounds, phr
   );
 }
 
-function DoneDisplay({ mode, elapsed, roundCount, phrase }: {
-  mode: WorkoutMode; elapsed: number; roundCount: number; phrase: string;
+function DoneDisplay({ mode, elapsed, roundCount, phrase, onBack }: {
+  mode: WorkoutMode; elapsed: number; roundCount: number; phrase: string; onBack: () => void;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2.5vh", maxWidth: "88vw", textAlign: "center" }}>
-      <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(42px,14vmin,110px)", fontWeight: 700, color: DONE_COLOR, letterSpacing: "0.2em", animation: "scale-in 0.4s ease-out" }}>
-        TEMPO!
-      </div>
-      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(13px,1.8vw,26px)", fontWeight: 400, color: "rgba(248,249,250,0.32)", letterSpacing: "0.1em" }}>
-        Allenamento completato
-      </div>
-
-      {mode === "FOR_TIME" && (
-        <div>
-          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginBottom: "8px", textTransform: "uppercase" }}>Tempo totale</div>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(56px,9vw,120px)", fontWeight: 700, color: DONE_COLOR, lineHeight: 1 }}>{formatTime(elapsed)}</div>
+    <>
+      <Confetti />
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2.5vh", maxWidth: "88vw", textAlign: "center" }}>
+        <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(28px,8vmin,72px)", fontWeight: 700, color: DONE_COLOR, letterSpacing: "0.15em", lineHeight: 1.15, animation: "scale-in 0.4s ease-out" }}>
+          ALLENAMENTO<br />COMPLETATO
         </div>
-      )}
-      {mode === "AMRAP" && (
-        <div>
-          <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginBottom: "8px", textTransform: "uppercase" }}>Giri totali</div>
-          <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,13vw,170px)", fontWeight: 700, color: DONE_COLOR, lineHeight: 1 }}>{roundCount}</div>
+
+        {mode === "FOR_TIME" && (
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginBottom: "8px", textTransform: "uppercase" }}>Tempo totale</div>
+            <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(56px,9vw,120px)", fontWeight: 700, color: DONE_COLOR, lineHeight: 1 }}>{formatTime(elapsed)}</div>
+          </div>
+        )}
+        {mode === "AMRAP" && (
+          <div>
+            <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,14px)", fontWeight: 500, color: "rgba(248,249,250,0.32)", letterSpacing: "0.18em", marginBottom: "8px", textTransform: "uppercase" }}>Giri totali</div>
+            <div style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(80px,13vw,170px)", fontWeight: 700, color: DONE_COLOR, lineHeight: 1 }}>{roundCount}</div>
+          </div>
+        )}
+
+        <div style={{ maxWidth: "clamp(260px,52vw,700px)", background: "rgba(46,204,113,0.05)", border: "1px solid rgba(46,204,113,0.18)", borderRadius: "16px", padding: "clamp(14px,2vh,26px) clamp(18px,3vw,36px)", fontFamily: "Inter,sans-serif", fontSize: "clamp(14px,1.7vw,24px)", fontWeight: 500, color: "rgba(248,249,250,0.78)", lineHeight: 1.45, animation: "scale-in 0.5s ease-out 0.3s both" }}>
+          "{phrase}"
         </div>
-      )}
 
-      <div style={{ maxWidth: "clamp(260px,52vw,700px)", background: "rgba(46,204,113,0.05)", border: "1px solid rgba(46,204,113,0.18)", borderRadius: "16px", padding: "clamp(14px,2vh,26px) clamp(18px,3vw,36px)", fontFamily: "Inter,sans-serif", fontSize: "clamp(14px,1.7vw,24px)", fontWeight: 500, color: "rgba(248,249,250,0.78)", lineHeight: 1.45, animation: "scale-in 0.5s ease-out 0.3s both" }}>
-        "{phrase}"
+        <button
+          tabIndex={0}
+          autoFocus
+          className="wod-btn"
+          onClick={onBack}
+          style={{
+            marginTop: "1vh",
+            background: DONE_COLOR,
+            border: "none",
+            borderRadius: "20px",
+            padding: "clamp(12px,1.8vh,22px) clamp(32px,4vw,64px)",
+            fontFamily: "Inter,sans-serif",
+            fontSize: "clamp(15px,1.8vw,26px)",
+            fontWeight: 700,
+            color: "#121212",
+            cursor: "pointer",
+            letterSpacing: "0.1em",
+            animation: "scale-in 0.4s ease-out 0.6s both",
+          }}
+        >
+          ← TORNA AL MENU
+        </button>
       </div>
-
-      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,1vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.15em" }}>
-        INVIO / ESC = Menu
-      </div>
-    </div>
+    </>
   );
 }
 
@@ -553,7 +603,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
           + Giro
         </button>
         <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em", marginTop: "4px" }}>
-          <span className="dpad-hint">INVIO / ↑ = +Giro &nbsp;·&nbsp; ESC = Menu</span>
+          <span className="dpad-hint">INVIO / ↑ = +Giro</span>
         </div>
       </div>
     );
@@ -576,7 +626,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
           Fine
         </button>
         <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em", marginTop: "4px" }}>
-          <span className="dpad-hint">INVIO / ↓ = Fine &nbsp;·&nbsp; ESC = Menu</span>
+          <span className="dpad-hint">INVIO / ↓ = Fine</span>
         </div>
       </div>
     );
@@ -593,7 +643,7 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
           di {state.totalRounds} totali
         </div>
         <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.18)", letterSpacing: "0.1em", marginTop: "8px" }}>
-          INVIO = Pausa &nbsp;·&nbsp; ESC = Menu
+          INVIO = Pausa
         </div>
       </div>
     );
@@ -665,43 +715,69 @@ function RightPanel({ state, mode, onAddRound, onFinishForTime, actionBtnRef }: 
 
       {/* Hint */}
       <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(10px,0.9vw,13px)", fontWeight: 400, color: "rgba(248,249,250,0.2)", letterSpacing: "0.06em", marginTop: "4px" }}>
-        INVIO = Pausa &nbsp;·&nbsp; ESC = Menu
+        INVIO = Pausa
       </div>
     </div>
   );
 }
 
-/* ───────────────────────── Brand Badge ───────────────────────── */
+/* ───────────────────────── Confetti ───────────────────────── */
 
-function BrandBadge({ size }: { size: number }) {
-  const ring = Math.max(2, Math.round(size * 0.07));
-  return (
-    <div
-      className="dpad-hint"
-      style={{
-        width: size,
-        height: size,
-        flexShrink: 0,
-        alignSelf: "center",
-        borderRadius: "50%",
-        background: "radial-gradient(circle at 36% 32%, #484848 0%, #252525 55%, #181818 100%)",
-        border: `${ring}px solid #3c3c3c`,
-        boxShadow:
-          `0 0 0 ${Math.max(1, ring - 1)}px #555, ` +
-          `0 0 0 ${ring * 2}px #222, ` +
-          "0 6px 24px rgba(0,0,0,0.7), " +
-          "0 0 32px rgba(46,204,113,0.10)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        overflow: "hidden",
-      }}
-    >
-      <img
-        src={`${import.meta.env.BASE_URL}logo.png`.replace(/\/+/g, "/")}
-        alt="SmartWOD"
-        style={{ width: "62%", height: "62%", objectFit: "contain", opacity: 0.88 }}
-      />
-    </div>
-  );
+function Confetti() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const COLORS = ["#2ECC71","#E67E22","#3498DB","#E74C3C","#F1C40F","#9B59B6","#1ABC9C"];
+    const pieces = Array.from({ length: 140 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: -Math.random() * window.innerHeight * 0.7,
+      w: Math.random() * 13 + 5,
+      h: Math.random() * 7 + 3,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      vx: (Math.random() - 0.5) * 2.5,
+      vy: Math.random() * 2.5 + 1.2,
+      rot: Math.random() * 360,
+      rotSpeed: (Math.random() - 0.5) * 9,
+      opacity: 1,
+    }));
+
+    let animId: number;
+    const start = Date.now();
+
+    function draw() {
+      const elapsed = (Date.now() - start) / 1000;
+      ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
+      let anyAlive = false;
+      for (const p of pieces) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.055;
+        p.rot += p.rotSpeed;
+        if (elapsed > 3.5) p.opacity = Math.max(0, p.opacity - 0.014);
+        if (p.y < canvas!.height + 30 && p.opacity > 0) anyAlive = true;
+        ctx!.save();
+        ctx!.globalAlpha = p.opacity;
+        ctx!.translate(p.x, p.y);
+        ctx!.rotate((p.rot * Math.PI) / 180);
+        ctx!.fillStyle = p.color;
+        ctx!.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+        ctx!.restore();
+      }
+      if (anyAlive && elapsed < 7) animId = requestAnimationFrame(draw);
+    }
+
+    draw();
+    return () => { cancelAnimationFrame(animId); window.removeEventListener("resize", resize); };
+  }, []);
+
+  return <canvas ref={canvasRef} style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 50 }} />;
 }
