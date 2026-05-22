@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import MenuScreen from "@/pages/MenuScreen";
 import ConfigScreen from "@/pages/ConfigScreen";
@@ -82,6 +82,28 @@ export default function App() {
       navigate("menu");
     }
   }
+
+  /* ── TV / Android back button (MiBox3, Fire TV, etc.) ──
+     Il tasto Back fisico del telecomando non genera keydown:
+     il browser lo gestisce come popstate. Pushiamo una voce
+     nella cronologia quando entriamo in schermate "profonde"
+     e intercettiamo popstate per tornare al menu.           */
+  const handleBackRef = useRef(handleBack);
+  handleBackRef.current = handleBack;
+
+  useEffect(() => {
+    if (screen === "config" || screen === "timer") {
+      window.history.pushState({ appScreen: screen }, "");
+    }
+  }, [screen]);
+
+  useEffect(() => {
+    function onPopState() {
+      handleBackRef.current();
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   return (
     <div style={{ width: "100vw", height: "100vh", background: "#121212", overflow: "hidden", position: "relative" }}>
