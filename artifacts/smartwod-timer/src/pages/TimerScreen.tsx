@@ -127,12 +127,17 @@ function advancePhase(prev: TimerState, config: WorkoutConfig): TimerState {
 
   if (mode === "TABATA") {
     if (prev.phase === "running") {
+      // Work set done — go to rest before the next set or round-pause
+      const restT = config.restTime ?? 10;
+      return { ...prev, phase: "rest", timeLeft: restT, totalTime: restT };
+    }
+    if (prev.phase === "rest") {
       const nextSet = prev.currentSet + 1;
       if (nextSet <= prev.setsPerRound) {
         const t = config.workTime ?? 20;
         return { ...prev, phase: "running", currentSet: nextSet, timeLeft: t, totalTime: t };
       }
-      // All sets in round done — go to round-pause (no rest between exercises)
+      // All sets in round done — go to round-pause
       const nextRound = prev.currentRound + 1;
       if (nextRound > prev.totalRounds)
         return { ...prev, phase: "done", timeLeft: 0, phrase: getRandomFrase() };
