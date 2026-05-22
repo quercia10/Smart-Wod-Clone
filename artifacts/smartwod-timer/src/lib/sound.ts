@@ -110,17 +110,17 @@ function pad(
 
 export function playFanfare(): void {
   const ctx = getCtx();
-  // Accordo Cmaj (C4-E4-G4) morbido, poi risoluzione Cmaj7 (C4-E4-G4-B4)
-  // Prima triade — attacco lento
-  pad(ctx, 261.6, 0.22, 0.35, 0.6, 0.8, 0.00);  // C4
-  pad(ctx, 329.6, 0.18, 0.40, 0.6, 0.8, 0.00);  // E4
-  pad(ctx, 392.0, 0.15, 0.45, 0.6, 0.8, 0.00);  // G4
-  // Secondo accordo sfalsato (più caldo, ottava sopra)
-  pad(ctx, 523.3, 0.16, 0.45, 0.8, 1.2, 0.55);  // C5
-  pad(ctx, 659.3, 0.13, 0.50, 0.8, 1.2, 0.60);  // E5
-  pad(ctx, 783.9, 0.10, 0.55, 0.8, 1.2, 0.65);  // G5
-  // Nota finale brillante ma sinusoidale (B4 per colore maj7)
-  pad(ctx, 493.9, 0.09, 0.60, 1.0, 1.5, 1.00);  // B4
+  // Super Mario Bros — Course Clear, onda sinusoidale morbida (no square wave)
+  pad(ctx, 392.0, 0.28, 0.04, 0.08, 0.10, 0.00);  // G4
+  pad(ctx, 523.3, 0.28, 0.04, 0.08, 0.10, 0.12);  // C5
+  pad(ctx, 659.3, 0.28, 0.04, 0.08, 0.10, 0.24);  // E5
+  pad(ctx, 784.0, 0.30, 0.04, 0.16, 0.14, 0.36);  // G5
+  pad(ctx, 659.3, 0.26, 0.04, 0.08, 0.10, 0.56);  // E5
+  pad(ctx, 784.0, 0.30, 0.04, 0.32, 0.18, 0.66);  // G5
+  // Accordo finale C6+G5+E5 con fade-in morbido
+  pad(ctx, 1046.5, 0.26, 0.10, 1.20, 0.70, 1.06); // C6
+  pad(ctx, 784.0,  0.18, 0.14, 1.10, 0.60, 1.06); // G5
+  pad(ctx, 659.3,  0.13, 0.18, 1.00, 0.50, 1.06); // E5
 }
 
 /* ── Rest beep: tono morbido a 500Hz ── */
