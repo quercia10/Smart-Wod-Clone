@@ -25,7 +25,7 @@ const FIELDS: Record<WorkoutMode, FieldDef[]> = {
     { key: "rounds",         label: "Numero Serie",        unit: "serie",  min: 1,  max: 12,  step: 1,  default: 4  },
     { key: "setsPerRound",   label: "Esercizi per Serie",  unit: "eserc.", min: 1,  max: 8,   step: 1,  default: 2  },
     { key: "workTime",       label: "Tempo Lavoro",        unit: "sec",    min: 5,  max: 60,  step: 5,  default: 20 },
-    { key: "restTime",       label: "Pausa Esercizio",     unit: "sec",    min: 5,  max: 60,  step: 5,  default: 10 },
+    { key: "restTime",       label: "Pausa Esercizio",     unit: "sec",    min: 1,  max: 60,  step: 1,  default: 10 },
     { key: "roundPauseTime", label: "Pausa Serie",         unit: "sec",    min: 10, max: 120, step: 10, default: 60 },
   ],
 };
