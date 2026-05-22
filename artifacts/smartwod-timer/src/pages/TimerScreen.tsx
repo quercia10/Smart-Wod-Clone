@@ -312,6 +312,17 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         onBack(); return;
       }
+      // Tasti media telecomando (MiBox3, Fire TV, ecc.)
+      if (e.key === "MediaPlayPause" || e.key === "MediaPlay" || e.key === "MediaPause") {
+        e.preventDefault();
+        if (state.phase === "done") return;
+        togglePause(); return;
+      }
+      if (e.key === "MediaStop") {
+        e.preventDefault();
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        onBack(); return;
+      }
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         if (state.phase === "done") { onBack(); return; }
