@@ -25,7 +25,6 @@ const FIELDS: Record<WorkoutMode, FieldDef[]> = {
     { key: "rounds",         label: "Numero Serie",        unit: "serie",  min: 1,  max: 12,  step: 1,  default: 4  },
     { key: "setsPerRound",   label: "Esercizi per Serie",  unit: "eserc.", min: 1,  max: 8,   step: 1,  default: 2  },
     { key: "workTime",       label: "Tempo Lavoro",        unit: "sec",    min: 5,  max: 60,  step: 5,  default: 20 },
-    { key: "restTime",       label: "Recupero Esercizio",  unit: "sec",    min: 5,  max: 60,  step: 5,  default: 10 },
     { key: "roundPauseTime", label: "Pausa Serie",         unit: "sec",    min: 10, max: 120, step: 10, default: 60 },
   ],
 };
@@ -80,10 +79,22 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
     if (values.rounds != null) cfg.rounds = values.rounds;
     if (values.setsPerRound != null) cfg.setsPerRound = values.setsPerRound;
     if (values.workTime != null) cfg.workTime = values.workTime;
-    if (values.restTime != null) cfg.restTime = values.restTime;
     if (values.roundPauseTime != null) cfg.roundPauseTime = values.roundPauseTime;
     return cfg;
   }, [mode, values]);
+
+  const tabataTotalSeconds = mode === "TABATA"
+    ? (values.rounds ?? 4) * (values.setsPerRound ?? 2) * (values.workTime ?? 20)
+      + ((values.rounds ?? 4) - 1) * (values.roundPauseTime ?? 60)
+    : 0;
+
+  function fmtTime(s: number): string {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return m > 0
+      ? `${m} min${sec > 0 ? ` ${sec} sec` : ""}`
+      : `${sec} sec`;
+  }
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -175,6 +186,26 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
             </div>
           );
         })}
+
+        {/* TABATA total time */}
+        {mode === "TABATA" && (
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: `rgba(${hexToRgb(accent)},0.07)`,
+            border: `1px solid rgba(${hexToRgb(accent)},0.25)`,
+            borderRadius: "14px",
+            padding: "clamp(10px, 1.4vh, 18px) clamp(18px, 2.5vw, 36px)",
+          }}>
+            <div style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(12px, 1.4vw, 20px)", fontWeight: 500, color: `rgba(${hexToRgb(accent)},0.75)`, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+              Tempo totale previsto
+            </div>
+            <div style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(20px, 2.6vw, 38px)", fontWeight: 700, color: accent, letterSpacing: "0.04em" }}>
+              {fmtTime(tabataTotalSeconds)}
+            </div>
+          </div>
+        )}
 
         {/* START button */}
         <button

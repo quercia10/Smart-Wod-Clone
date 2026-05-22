@@ -124,16 +124,12 @@ function advancePhase(prev: TimerState, config: WorkoutConfig): TimerState {
 
   if (mode === "TABATA") {
     if (prev.phase === "running") {
-      const t = config.restTime ?? 10;
-      return { ...prev, phase: "rest", timeLeft: t, totalTime: t };
-    }
-    if (prev.phase === "rest") {
       const nextSet = prev.currentSet + 1;
       if (nextSet <= prev.setsPerRound) {
         const t = config.workTime ?? 20;
         return { ...prev, phase: "running", currentSet: nextSet, timeLeft: t, totalTime: t };
       }
-      // All sets in round done
+      // All sets in round done — go to round-pause (no rest between exercises)
       const nextRound = prev.currentRound + 1;
       if (nextRound > prev.totalRounds)
         return { ...prev, phase: "done", timeLeft: 0, phrase: getRandomFrase() };
@@ -164,14 +160,11 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
   const bg       = phaseBg(state.phase);
   const progress = state.totalTime > 0 ? state.timeLeft / state.totalTime : 0;
 
-  /* ── avviso countdown: giallo caldo negli ultimi 5s (lavoro/rest) o 10s (round-pause) ── */
+  /* ── avviso countdown: giallo caldo negli ultimi 5s in tutte le fasi ── */
   const WARNING_COLOR = "#F1C40F";
   const isWarning = (
-    (state.phase === "running" || state.phase === "rest") &&
+    (state.phase === "running" || state.phase === "rest" || state.phase === "round-pause") &&
     state.timeLeft > 0 && state.timeLeft <= 5
-  ) || (
-    state.phase === "round-pause" &&
-    state.timeLeft > 0 && state.timeLeft <= 10
   );
   const displayColor = isWarning ? WARNING_COLOR : color;
 
@@ -202,8 +195,8 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
         ? prev.elapsedForTime + 1
         : prev.elapsedForTime;
 
-      // round-pause (lunga) → avviso a 10s; tutto il resto → avviso a 5s
-      const warnAt = prev.phase === "round-pause" ? 10 : 5;
+      // avviso sonoro a 5s per tutte le fasi
+      const warnAt = 5;
       if (newLeft <= warnAt && newLeft > 0 && lastBeepRef.current !== newLeft) {
         lastBeepRef.current = newLeft;
         playCountdownBeep();
