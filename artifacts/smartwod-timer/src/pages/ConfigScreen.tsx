@@ -25,6 +25,7 @@ const FIELDS: Record<WorkoutMode, FieldDef[]> = {
     { key: "rounds",         label: "Numero Serie",        unit: "serie",  min: 1,  max: 12,  step: 1,  default: 4  },
     { key: "setsPerRound",   label: "Esercizi per Serie",  unit: "eserc.", min: 1,  max: 8,   step: 1,  default: 2  },
     { key: "workTime",       label: "Tempo Lavoro",        unit: "sec",    min: 5,  max: 60,  step: 5,  default: 20 },
+    { key: "restTime",       label: "Pausa Esercizio",     unit: "sec",    min: 5,  max: 60,  step: 5,  default: 10 },
     { key: "roundPauseTime", label: "Pausa Serie",         unit: "sec",    min: 10, max: 120, step: 10, default: 60 },
   ],
 };
@@ -79,12 +80,16 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
     if (values.rounds != null) cfg.rounds = values.rounds;
     if (values.setsPerRound != null) cfg.setsPerRound = values.setsPerRound;
     if (values.workTime != null) cfg.workTime = values.workTime;
+    if (values.restTime != null) cfg.restTime = values.restTime;
     if (values.roundPauseTime != null) cfg.roundPauseTime = values.roundPauseTime;
     return cfg;
   }, [mode, values]);
 
   const tabataTotalSeconds = mode === "TABATA"
-    ? (values.rounds ?? 4) * (values.setsPerRound ?? 2) * (values.workTime ?? 20)
+    ? (values.rounds ?? 4) * (
+        (values.setsPerRound ?? 2) * (values.workTime ?? 20)
+        + (values.setsPerRound ?? 2) * (values.restTime ?? 10)
+      )
       + ((values.rounds ?? 4) - 1) * (values.roundPauseTime ?? 60)
     : 0;
 
