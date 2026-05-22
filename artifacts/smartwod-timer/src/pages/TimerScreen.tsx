@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import ProgressCircle from "@/components/ProgressCircle";
 import SegmentedRing from "@/components/SegmentedRing";
-import BackgroundLogo from "@/components/BackgroundLogo";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 import { getRandomFrase } from "@/lib/frasi";
 import {
@@ -333,7 +332,6 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
       tabIndex={-1}
       style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease", outline: "none" }}
     >
-      <BackgroundLogo />
 
       {/* Phase tint */}
       <div style={{ position: "absolute", inset: 0, background: bg, transition: "background 0.5s ease", pointerEvents: "none", zIndex: 1 }} />
@@ -737,33 +735,42 @@ function Confetti() {
     window.addEventListener("resize", resize);
 
     const COLORS = ["#2ECC71","#E67E22","#3498DB","#E74C3C","#F1C40F","#9B59B6","#1ABC9C"];
-    const pieces = Array.from({ length: 140 }, () => ({
+    const makepiece = () => ({
       x: Math.random() * window.innerWidth,
-      y: -Math.random() * window.innerHeight * 0.7,
+      y: -Math.random() * window.innerHeight * 0.5 - 10,
       w: Math.random() * 13 + 5,
       h: Math.random() * 7 + 3,
       color: COLORS[Math.floor(Math.random() * COLORS.length)],
       vx: (Math.random() - 0.5) * 2.5,
-      vy: Math.random() * 2.5 + 1.2,
+      vy: Math.random() * 2 + 1,
       rot: Math.random() * 360,
       rotSpeed: (Math.random() - 0.5) * 9,
       opacity: 1,
-    }));
+    });
+    const pieces = Array.from({ length: 150 }, makepiece);
 
     let animId: number;
     const start = Date.now();
+    const DURATION = 20;
 
     function draw() {
       const elapsed = (Date.now() - start) / 1000;
+      if (elapsed > DURATION + 1) return;
       ctx!.clearRect(0, 0, canvas!.width, canvas!.height);
-      let anyAlive = false;
+      const fading = elapsed > DURATION - 2;
       for (const p of pieces) {
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.055;
+        p.vy += 0.045;
         p.rot += p.rotSpeed;
-        if (elapsed > 3.5) p.opacity = Math.max(0, p.opacity - 0.014);
-        if (p.y < canvas!.height + 30 && p.opacity > 0) anyAlive = true;
+        if (fading) {
+          p.opacity = Math.max(0, p.opacity - 0.022);
+        } else if (p.y > canvas!.height + 20) {
+          Object.assign(p, makepiece());
+          p.x = Math.random() * canvas!.width;
+          p.vy = Math.random() * 2 + 1;
+        }
+        if (p.opacity <= 0) continue;
         ctx!.save();
         ctx!.globalAlpha = p.opacity;
         ctx!.translate(p.x, p.y);
@@ -772,7 +779,7 @@ function Confetti() {
         ctx!.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
         ctx!.restore();
       }
-      if (anyAlive && elapsed < 7) animId = requestAnimationFrame(draw);
+      animId = requestAnimationFrame(draw);
     }
 
     draw();
