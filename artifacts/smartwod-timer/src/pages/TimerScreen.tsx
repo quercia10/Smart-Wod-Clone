@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import BackgroundLogo from "@/components/BackgroundLogo";
 import ProgressCircle from "@/components/ProgressCircle";
 import SegmentedRing from "@/components/SegmentedRing";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
@@ -332,6 +333,8 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
       tabIndex={-1}
       style={{ width: "100vw", height: "100vh", background: "transparent", display: "flex", flexDirection: "column", overflow: "hidden", position: "relative", transition: "background 0.5s ease", outline: "none" }}
     >
+
+      <BackgroundLogo />
 
       {/* Phase tint */}
       <div style={{ position: "absolute", inset: 0, background: bg, transition: "background 0.5s ease", pointerEvents: "none", zIndex: 1 }} />
