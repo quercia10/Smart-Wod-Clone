@@ -30,6 +30,28 @@ function bell(
   osc.stop(ctx.currentTime + startAt + decayTime + 0.02);
 }
 
+/* ── Square-wave note: stile 8-bit retro ── */
+function retro(
+  ctx: AudioContext,
+  freq: number,
+  gain: number,
+  dur: number,
+  startAt = 0,
+): void {
+  const osc  = ctx.createOscillator();
+  const g    = ctx.createGain();
+  osc.connect(g);
+  g.connect(ctx.destination);
+  osc.type = "square";
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + startAt);
+  g.gain.setValueAtTime(0, ctx.currentTime + startAt);
+  g.gain.linearRampToValueAtTime(gain, ctx.currentTime + startAt + 0.008);
+  g.gain.setValueAtTime(gain, ctx.currentTime + startAt + dur - 0.02);
+  g.gain.linearRampToValueAtTime(0, ctx.currentTime + startAt + dur);
+  osc.start(ctx.currentTime + startAt);
+  osc.stop(ctx.currentTime + startAt + dur + 0.02);
+}
+
 /* ── Countdown beep: sordo, basso, 375Hz ── */
 export function playCountdownBeep(): void {
   const ctx = getCtx();
@@ -62,16 +84,20 @@ export function playEndBuzzer(): void {
   bell(ctx, 560, 0.55, 0.90, 0.35);
 }
 
-/* ── Victory fanfare: arpeggio ascendente C5→E5→G5→C6 + accordo finale ── */
+/* ── Super Mario Bros — Course Clear jingle (8-bit square wave) ── */
 export function playFanfare(): void {
   const ctx = getCtx();
-  bell(ctx, 523,  0.52, 0.22, 0.00);   // C5
-  bell(ctx, 659,  0.52, 0.22, 0.13);   // E5
-  bell(ctx, 784,  0.55, 0.22, 0.26);   // G5
-  bell(ctx, 1047, 0.62, 1.50, 0.40);   // C6 — tenuto
-  bell(ctx, 784,  0.36, 1.30, 0.42);   // G5 armonia
-  bell(ctx, 659,  0.26, 1.00, 0.44);   // E5 armonia
-  bell(ctx, 2093, 0.18, 0.50, 0.40);   // C7 sparkle
+  // Ascending run
+  retro(ctx, 392,  0.18, 0.11, 0.00);  // G4
+  retro(ctx, 523,  0.18, 0.11, 0.11);  // C5
+  retro(ctx, 659,  0.18, 0.11, 0.22);  // E5
+  retro(ctx, 784,  0.20, 0.22, 0.33);  // G5
+  retro(ctx, 659,  0.18, 0.11, 0.55);  // E5
+  retro(ctx, 784,  0.22, 0.44, 0.66);  // G5
+  // Final triumphant chord C6 + G5 + E5
+  retro(ctx, 1047, 0.20, 1.60, 1.10);  // C6
+  retro(ctx, 784,  0.14, 1.30, 1.10);  // G5
+  retro(ctx, 659,  0.10, 1.00, 1.10);  // E5
 }
 
 /* ── Rest beep: tono morbido a 500Hz ── */

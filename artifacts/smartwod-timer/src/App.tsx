@@ -76,7 +76,6 @@ export default function App() {
 
   function handleBack() {
     if (screen === "timer") {
-      setActiveConfig(null);
       navigate("menu");
     } else if (screen === "config") {
       setSelectedMode(null);

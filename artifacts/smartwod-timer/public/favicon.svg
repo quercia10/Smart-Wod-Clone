@@ -1,3 +1,19 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect width="180" height="180" rx="36" fill="#FF3C00"/>
+  <rect width="180" height="180" rx="36" fill="#121212"/>
+  <!-- Outer ring -->
+  <circle cx="90" cy="95" r="58" stroke="#2ECC71" stroke-width="6" fill="none"/>
+  <!-- Clock face ticks -->
+  <line x1="90" y1="40" x2="90" y2="52" stroke="#2ECC71" stroke-width="4" stroke-linecap="round"/>
+  <line x1="90" y1="138" x2="90" y2="150" stroke="#2ECC71" stroke-width="4" stroke-linecap="round"/>
+  <line x1="35" y1="95" x2="47" y2="95" stroke="#2ECC71" stroke-width="4" stroke-linecap="round"/>
+  <line x1="133" y1="95" x2="145" y2="95" stroke="#2ECC71" stroke-width="4" stroke-linecap="round"/>
+  <!-- Crown/buttons on top -->
+  <rect x="78" y="28" width="24" height="8" rx="4" fill="#2ECC71"/>
+  <rect x="86" y="22" width="8" height="10" rx="3" fill="#2ECC71"/>
+  <!-- Hour hand -->
+  <line x1="90" y1="95" x2="90" y2="65" stroke="#F8F9FA" stroke-width="5" stroke-linecap="round"/>
+  <!-- Minute hand -->
+  <line x1="90" y1="95" x2="115" y2="95" stroke="#2ECC71" stroke-width="4" stroke-linecap="round"/>
+  <!-- Center dot -->
+  <circle cx="90" cy="95" r="5" fill="#2ECC71"/>
 </svg>
