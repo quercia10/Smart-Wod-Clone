@@ -69,7 +69,8 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
     const field = fields[fieldIndex];
     if (!field) return;
     setValues((prev) => {
-      const next = prev[field.key] + delta * field.step;
+      const current = typeof prev[field.key] === "number" && !isNaN(prev[field.key]) ? prev[field.key] : field.default;
+      const next = current + delta * field.step;
       return { ...prev, [field.key]: Math.max(field.min, Math.min(field.max, next)) };
     });
   }, [fields]);
@@ -173,7 +174,7 @@ export default function ConfigScreen({ mode, onStart, onBack }: ConfigScreenProp
 
                 <div style={{ display: "flex", alignItems: "baseline", gap: "7px", minWidth: "6ch", justifyContent: "center" }}>
                   <span style={{ fontFamily: "Oswald, sans-serif", fontSize: "clamp(26px, 3.6vw, 52px)", fontWeight: 700, color: isFocused ? accent : "#F8F9FA", minWidth: "4ch", textAlign: "center", display: "inline-block", transition: "color 0.18s" }}>
-                    {values[field.key]}
+                    {(typeof values[field.key] === "number" && !isNaN(values[field.key])) ? values[field.key] : field.default}
                   </span>
                   <span style={{ fontFamily: "Inter, sans-serif", fontSize: "clamp(11px, 1.1vw, 16px)", color: isFocused ? "rgba(18,18,18,0.5)" : "rgba(248,249,250,0.38)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     {field.unit}
