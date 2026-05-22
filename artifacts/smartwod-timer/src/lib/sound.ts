@@ -84,20 +84,43 @@ export function playEndBuzzer(): void {
   bell(ctx, 560, 0.55, 0.90, 0.35);
 }
 
-/* ── Super Mario Bros — Course Clear jingle (8-bit square wave) ── */
+/* ── Victory mellow: accordi sinusoidali morbidi con fade-in lento ── */
+function pad(
+  ctx: AudioContext,
+  freq: number,
+  peakGain: number,
+  attack: number,
+  hold: number,
+  release: number,
+  startAt = 0,
+): void {
+  const osc  = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(freq, ctx.currentTime + startAt);
+  gain.gain.setValueAtTime(0, ctx.currentTime + startAt);
+  gain.gain.linearRampToValueAtTime(peakGain, ctx.currentTime + startAt + attack);
+  gain.gain.setValueAtTime(peakGain, ctx.currentTime + startAt + attack + hold);
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + startAt + attack + hold + release);
+  osc.start(ctx.currentTime + startAt);
+  osc.stop(ctx.currentTime + startAt + attack + hold + release + 0.05);
+}
+
 export function playFanfare(): void {
   const ctx = getCtx();
-  // Ascending run
-  retro(ctx, 392,  0.18, 0.11, 0.00);  // G4
-  retro(ctx, 523,  0.18, 0.11, 0.11);  // C5
-  retro(ctx, 659,  0.18, 0.11, 0.22);  // E5
-  retro(ctx, 784,  0.20, 0.22, 0.33);  // G5
-  retro(ctx, 659,  0.18, 0.11, 0.55);  // E5
-  retro(ctx, 784,  0.22, 0.44, 0.66);  // G5
-  // Final triumphant chord C6 + G5 + E5
-  retro(ctx, 1047, 0.20, 1.60, 1.10);  // C6
-  retro(ctx, 784,  0.14, 1.30, 1.10);  // G5
-  retro(ctx, 659,  0.10, 1.00, 1.10);  // E5
+  // Accordo Cmaj (C4-E4-G4) morbido, poi risoluzione Cmaj7 (C4-E4-G4-B4)
+  // Prima triade — attacco lento
+  pad(ctx, 261.6, 0.22, 0.35, 0.6, 0.8, 0.00);  // C4
+  pad(ctx, 329.6, 0.18, 0.40, 0.6, 0.8, 0.00);  // E4
+  pad(ctx, 392.0, 0.15, 0.45, 0.6, 0.8, 0.00);  // G4
+  // Secondo accordo sfalsato (più caldo, ottava sopra)
+  pad(ctx, 523.3, 0.16, 0.45, 0.8, 1.2, 0.55);  // C5
+  pad(ctx, 659.3, 0.13, 0.50, 0.8, 1.2, 0.60);  // E5
+  pad(ctx, 783.9, 0.10, 0.55, 0.8, 1.2, 0.65);  // G5
+  // Nota finale brillante ma sinusoidale (B4 per colore maj7)
+  pad(ctx, 493.9, 0.09, 0.60, 1.0, 1.5, 1.00);  // B4
 }
 
 /* ── Rest beep: tono morbido a 500Hz ── */
