@@ -10,6 +10,7 @@ import {
   playTripleBeep,
   playStartBuzzer,
   playEndBuzzer,
+  playFanfare,
   playRestBeep,
 } from "@/lib/sound";
 
@@ -244,7 +245,7 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
       playRestBeep();
       triggerFlash(PAUSE_COLOR);
     } else if (state.phase === "done") {
-      playEndBuzzer();
+      playFanfare();
       triggerFlash(DONE_COLOR);
     }
   }, [state.phase, mode]);

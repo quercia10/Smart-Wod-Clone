@@ -62,6 +62,18 @@ export function playEndBuzzer(): void {
   bell(ctx, 560, 0.55, 0.90, 0.35);
 }
 
+/* ── Victory fanfare: arpeggio ascendente C5→E5→G5→C6 + accordo finale ── */
+export function playFanfare(): void {
+  const ctx = getCtx();
+  bell(ctx, 523,  0.52, 0.22, 0.00);   // C5
+  bell(ctx, 659,  0.52, 0.22, 0.13);   // E5
+  bell(ctx, 784,  0.55, 0.22, 0.26);   // G5
+  bell(ctx, 1047, 0.62, 1.50, 0.40);   // C6 — tenuto
+  bell(ctx, 784,  0.36, 1.30, 0.42);   // G5 armonia
+  bell(ctx, 659,  0.26, 1.00, 0.44);   // E5 armonia
+  bell(ctx, 2093, 0.18, 0.50, 0.40);   // C7 sparkle
+}
+
 /* ── Rest beep: tono morbido a 500Hz ── */
 export function playRestBeep(): void {
   const ctx = getCtx();
