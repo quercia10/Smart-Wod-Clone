@@ -84,43 +84,59 @@ export function playEndBuzzer(): void {
   bell(ctx, 560, 0.55, 0.90, 0.35);
 }
 
-/* ── Victory mellow: accordi sinusoidali morbidi con fade-in lento ── */
-function pad(
-  ctx: AudioContext,
-  freq: number,
-  peakGain: number,
-  attack: number,
-  hold: number,
-  release: number,
-  startAt = 0,
-): void {
-  const osc  = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(freq, ctx.currentTime + startAt);
-  gain.gain.setValueAtTime(0, ctx.currentTime + startAt);
-  gain.gain.linearRampToValueAtTime(peakGain, ctx.currentTime + startAt + attack);
-  gain.gain.setValueAtTime(peakGain, ctx.currentTime + startAt + attack + hold);
-  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + startAt + attack + hold + release);
-  osc.start(ctx.currentTime + startAt);
-  osc.stop(ctx.currentTime + startAt + attack + hold + release + 0.05);
-}
-
+/* ── Super Mario Course Clear — versione soft ── */
 export function playFanfare(): void {
   const ctx = getCtx();
-  // Super Mario Bros — Course Clear, onda sinusoidale morbida (no square wave)
-  pad(ctx, 392.0, 0.28, 0.04, 0.08, 0.10, 0.00);  // G4
-  pad(ctx, 523.3, 0.28, 0.04, 0.08, 0.10, 0.12);  // C5
-  pad(ctx, 659.3, 0.28, 0.04, 0.08, 0.10, 0.24);  // E5
-  pad(ctx, 784.0, 0.30, 0.04, 0.16, 0.14, 0.36);  // G5
-  pad(ctx, 659.3, 0.26, 0.04, 0.08, 0.10, 0.56);  // E5
-  pad(ctx, 784.0, 0.30, 0.04, 0.32, 0.18, 0.66);  // G5
-  // Accordo finale C6+G5+E5 con fade-in morbido
-  pad(ctx, 1046.5, 0.26, 0.10, 1.20, 0.70, 1.06); // C6
-  pad(ctx, 784.0,  0.18, 0.14, 1.10, 0.60, 1.06); // G5
-  pad(ctx, 659.3,  0.13, 0.18, 1.00, 0.50, 1.06); // E5
+
+  // Compressore master: ammorbidisce i picchi senza distorcere
+  const comp = ctx.createDynamicsCompressor();
+  comp.threshold.setValueAtTime(-20, ctx.currentTime);
+  comp.knee.setValueAtTime(12, ctx.currentTime);
+  comp.ratio.setValueAtTime(5, ctx.currentTime);
+  comp.attack.setValueAtTime(0.004, ctx.currentTime);
+  comp.release.setValueAtTime(0.30, ctx.currentTime);
+  comp.connect(ctx.destination);
+
+  // Gain master ridotto: suona dolce, non squillante
+  const master = ctx.createGain();
+  master.connect(comp);
+  master.gain.setValueAtTime(0.55, ctx.currentTime);
+
+  function note(
+    freq: number,
+    peakGain: number,
+    attack: number,
+    hold: number,
+    release: number,
+    startAt: number,
+  ) {
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(master);
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(freq, ctx.currentTime + startAt);
+    gain.gain.setValueAtTime(0, ctx.currentTime + startAt);
+    gain.gain.linearRampToValueAtTime(peakGain, ctx.currentTime + startAt + attack);
+    gain.gain.setValueAtTime(peakGain, ctx.currentTime + startAt + attack + hold);
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + startAt + attack + hold + release);
+    osc.start(ctx.currentTime + startAt);
+    osc.stop(ctx.currentTime + startAt + attack + hold + release + 0.05);
+  }
+
+  // Super Mario Bros — Course Clear
+  //                  freq    gain  atk   hold  rel   start
+  note(392.0,         0.18, 0.012, 0.08, 0.11, 0.00); // G4
+  note(523.3,         0.18, 0.012, 0.08, 0.11, 0.15); // C5
+  note(659.3,         0.18, 0.012, 0.08, 0.11, 0.30); // E5
+  note(784.0,         0.20, 0.012, 0.20, 0.13, 0.45); // G5
+  note(659.3,         0.16, 0.012, 0.08, 0.11, 0.68); // E5
+  note(784.0,         0.20, 0.015, 0.40, 0.22, 0.80); // G5 (tenuto)
+  // Accordo finale C maggiore — gains scalati per registro
+  note(523.3,         0.14, 0.09,  1.10, 0.80, 1.24); // C5 (root grave, caldo)
+  note(659.3,         0.11, 0.12,  1.00, 0.70, 1.24); // E5
+  note(784.0,         0.09, 0.15,  0.90, 0.60, 1.24); // G5
+  note(1046.5,        0.06, 0.20,  0.80, 0.55, 1.24); // C6 (molto quieto)
 }
 
 /* ── Rest beep: tono morbido a 500Hz ── */
