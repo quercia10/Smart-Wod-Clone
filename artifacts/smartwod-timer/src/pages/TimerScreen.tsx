@@ -552,14 +552,42 @@ export default function TimerScreen({ config, onBack }: TimerScreenProps) {
 /* ───────────────────────── Sub-components ───────────────────────── */
 
 function CountdownDisplay({ countdownNum }: { countdownNum: number }) {
+  const isFinal = countdownNum <= 3;
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "2vh" }}>
-      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(16px,2.2vw,34px)", fontWeight: 600, color: "rgba(248,249,250,0.42)", letterSpacing: "0.3em", textTransform: "uppercase" }}>Preparati</div>
-      <div key={countdownNum} style={{ fontFamily: "Oswald,sans-serif", fontSize: "clamp(90px,28vmin,360px)", fontWeight: 700, color: "#E67E22", lineHeight: 1, animation: "countdown-num 1s ease-in-out" }}>
+      <div style={{
+        fontFamily: "Inter,sans-serif",
+        fontSize: isFinal ? "clamp(18px,2.8vw,42px)" : "clamp(16px,2.2vw,34px)",
+        fontWeight: 700,
+        color: isFinal ? "#E67E22" : "rgba(248,249,250,0.42)",
+        letterSpacing: "0.3em",
+        textTransform: "uppercase",
+        transition: "color 0.3s, font-size 0.3s",
+      }}>
+        {isFinal ? "VIA!" : "Preparati"}
+      </div>
+      <div
+        key={countdownNum}
+        style={{
+          fontFamily: "Oswald,sans-serif",
+          fontSize: isFinal ? "clamp(140px,46vmin,520px)" : "clamp(90px,28vmin,360px)",
+          fontWeight: 700,
+          color: isFinal ? "#E74C3C" : "#E67E22",
+          lineHeight: 1,
+          animation: isFinal ? "countdown-final 1s cubic-bezier(0.22,1,0.36,1)" : "countdown-num 1s ease-in-out",
+          textShadow: isFinal ? "0 0 60px rgba(231,76,60,0.5)" : "none",
+        }}
+      >
         {countdownNum}
       </div>
-      <div style={{ fontFamily: "Inter,sans-serif", fontSize: "clamp(12px,1.3vw,18px)", fontWeight: 400, color: "rgba(248,249,250,0.25)", letterSpacing: "0.2em" }}>
-        {countdownNum <= 3 ? "Via tra poco..." : "secondi all'inizio"}
+      <div style={{
+        fontFamily: "Inter,sans-serif",
+        fontSize: "clamp(12px,1.3vw,18px)",
+        fontWeight: 400,
+        color: isFinal ? "rgba(231,76,60,0.55)" : "rgba(248,249,250,0.25)",
+        letterSpacing: "0.2em",
+      }}>
+        {isFinal ? "Pronti..." : "secondi all'inizio"}
       </div>
     </div>
   );

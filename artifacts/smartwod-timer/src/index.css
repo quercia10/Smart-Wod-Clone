@@ -169,6 +169,12 @@
   82%  { transform: scale(1);   opacity: 1; }
   100% { transform: scale(0.8); opacity: 0; }
 }
+@keyframes countdown-final {
+  0%   { transform: scale(1.6); opacity: 0; }
+  20%  { transform: scale(1);   opacity: 1; }
+  75%  { transform: scale(1);   opacity: 1; }
+  100% { transform: scale(0.7); opacity: 0; }
+}
 @keyframes flash-surface {
   0%, 100% { background-color: transparent; }
   50%       { background-color: rgba(231,76,60,0.12); }

@@ -3,25 +3,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import MenuScreen from "@/pages/MenuScreen";
 import ConfigScreen from "@/pages/ConfigScreen";
 import TimerScreen from "@/pages/TimerScreen";
-import AccessGate from "@/pages/AccessGate";
-import TrialBanner from "@/pages/TrialBanner";
-import { checkLicense, markTrialUsed } from "@/lib/license";
 import { WorkoutConfig, WorkoutMode } from "@/lib/types";
 
-type Screen = "gate" | "gate-expired" | "trial-banner" | "menu" | "config" | "timer";
+type Screen = "menu" | "config" | "timer";
 
-const SCREEN_ORDER: Screen[] = ["gate", "gate-expired", "trial-banner", "menu", "config", "timer"];
-
-function getInitialScreen(): Screen {
-  const status = checkLicense();
-  if (status === "lifetime") return "menu";
-  if (status === "trial-active") return "trial-banner";
-  if (status === "trial-expired") {
-    markTrialUsed();
-    return "gate-expired";
-  }
-  return "gate";
-}
+const SCREEN_ORDER: Screen[] = ["menu", "config", "timer"];
 
 const variants = {
   enter: (dir: number) => ({
@@ -44,8 +30,8 @@ const variants = {
 };
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>(getInitialScreen);
-  const [prevScreen, setPrevScreen] = useState<Screen>(getInitialScreen);
+  const [screen, setScreen] = useState<Screen>("menu");
+  const [prevScreen, setPrevScreen] = useState<Screen>("menu");
   const [selectedMode, setSelectedMode] = useState<WorkoutMode | null>(null);
   const [activeConfig, setActiveConfig] = useState<WorkoutConfig | null>(null);
 
@@ -54,14 +40,6 @@ export default function App() {
   function navigate(next: Screen) {
     setPrevScreen(screen);
     setScreen(next);
-  }
-
-  function handleUnlock(type: "trial" | "lifetime") {
-    navigate(type === "trial" ? "trial-banner" : "menu");
-  }
-
-  function handleTrialBannerDone() {
-    navigate("menu");
   }
 
   function handleModeSelect(config: WorkoutConfig) {
@@ -83,11 +61,8 @@ export default function App() {
     }
   }
 
-  /* ── TV / Android back button (MiBox3, Fire TV, etc.) ──
-     Il tasto Back fisico del telecomando non genera keydown:
-     il browser lo gestisce come popstate. Pushiamo una voce
-     nella cronologia quando entriamo in schermate "profonde"
-     e intercettiamo popstate per tornare al menu.           */
+  /* ── TV / Android back button (MiBox3, Fire TV, ecc.) ──
+     Il tasto Back fisico del telecomando gestisce popstate. */
   const handleBackRef = useRef(handleBack);
   handleBackRef.current = handleBack;
 
@@ -117,15 +92,6 @@ export default function App() {
           exit="exit"
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}
         >
-          {screen === "gate" && (
-            <AccessGate mode="normal" onUnlock={handleUnlock} />
-          )}
-          {screen === "gate-expired" && (
-            <AccessGate mode="expired" onUnlock={handleUnlock} />
-          )}
-          {screen === "trial-banner" && (
-            <TrialBanner onDone={handleTrialBannerDone} />
-          )}
           {screen === "menu" && (
             <MenuScreen onSelect={handleModeSelect} />
           )}
